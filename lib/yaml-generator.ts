@@ -1,0 +1,348 @@
+import { ProxyNode } from './types';
+
+export interface ClashYamlConfig {
+  proxies: any[];
+  'proxy-groups': any[];
+}
+
+export function generateClashYaml(proxies: ProxyNode[], groupName: string = 'Proxy'): string {
+  if (proxies.length === 0) {
+    return '# No proxies found\n';
+  }
+
+  // Generate proxy list
+  const proxyConfigs = proxies.map(proxy => generateProxyConfig(proxy));
+
+  // Generate proxy group
+  const proxyNames = proxies.map(p => p.name);
+  const proxyGroup = {
+    name: groupName,
+    type: 'select',
+    proxies: proxyNames,
+  };
+
+  // Build YAML
+  let yaml = 'mixed-port: 7890\n';
+  yaml += 'allow-lan: true\n';
+  yaml += 'mode: rule\n';
+  yaml += 'log-level: info\n';
+  yaml += 'external-controller: 127.0.0.1:9090\n\n';
+
+  yaml += 'proxies:\n';
+  for (const config of proxyConfigs) {
+    yaml += `  ${formatYamlObject(config, 2)}\n`;
+  }
+
+  yaml += '\nproxy-groups:\n';
+  yaml += `  ${formatYamlObject(proxyGroup, 2)}\n`;
+
+  yaml += '\nrules:\n';
+  yaml += '  - GEOIP,CN,DIRECT\n';
+  yaml += '  - MATCH,Proxy\n';
+
+  return yaml;
+}
+
+function generateProxyConfig(proxy: ProxyNode): any {
+  const base: any = {
+    name: proxy.name,
+    type: proxy.type,
+    server: proxy.server,
+    port: proxy.port,
+  };
+
+  switch (proxy.type) {
+    case 'ss':
+      return {
+        ...base,
+        cipher: proxy.cipher || 'aes-256-gcm',
+        udp: proxy.udp ?? true,
+      };
+
+    case 'ssr':
+      return {
+        ...base,
+        cipher: proxy.cipher,
+        password: proxy.password,
+        protocol: proxy.protocol,
+        protocolparam: proxy.protocolparam || '',
+        obfs: proxy.obfs,
+        obfsparam: proxy.obfsparam || '',
+      };
+
+    case 'vmess':
+      return {
+        ...base,
+        uuid: proxy.uuid,
+        alterId: proxy.alterId || 0,
+        cipher: proxy.cipher || 'auto',
+        udp: proxy.udp ?? true,
+        tls: proxy.tls || false,
+        'skip-cert-verify': proxy['skip-cert-verify'] || false,
+        network: proxy.network || 'tcp',
+        servername: proxy.servername || '',
+        'ws-opts': proxy['ws-opts'],
+      };
+
+    case 'trojan':
+      return {
+        ...base,
+        password: proxy.password,
+        udp: proxy.udp ?? true,
+        'skip-cert-verify': proxy['skip-cert-verify'] || false,
+        sni: proxy.sni || '',
+        network: proxy.network || 'tcp',
+      };
+
+    case 'hysteria':
+      return {
+        ...base,
+        auth: proxy.auth,
+        protocol: proxy.protocol || 'udp',
+        'skip-cert-verify': proxy['skip-cert-verify'] || false,
+        sni: proxy.sni || '',
+        up: proxy.up || '10',
+        down: proxy.down || '50',
+        alpn: proxy.alpn || 'h3',
+      };
+
+    case 'vless':
+      return {
+        ...base,
+        uuid: proxy.uuid,
+        udp: proxy.udp ?? true,
+        tls: proxy.tls || false,
+        'skip-cert-verify': proxy['skip-cert-verify'] || false,
+        network: proxy.network || 'tcp',
+        servername: proxy.servername || '',
+        flow: proxy.flow || '',
+        'ws-opts': proxy['ws-opts'],
+      };
+
+    case 'http':
+      return {
+        ...base,
+        username: proxy.username,
+        password: proxy.password,
+        tls: proxy.tls || false,
+      };
+
+    case 'socks5':
+      return {
+        ...base,
+        username: proxy.username,
+        password: proxy.password,
+        udp: proxy.udp ?? true,
+      };
+
+    default:
+      return base;
+  }
+}
+
+function formatYamlObject(obj: any, indent: number = 0): string {
+  const spaces = ' '.repeat(indent);
+  let result = '';
+
+  if (Array.isArray(obj)) {
+    for (const item of obj) {
+      if (typeof item === 'object' && item !== null) {
+        result += `\n${spaces}- ${formatYamlObject(item, indent + 2).trim()}`;
+      } else {
+        result += `\n${spaces}- ${item}`;
+      }
+    }
+  } else if (typeof obj === 'object' && obj !== null) {
+    const keys = Object.keys(obj);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = obj[key];
+
+      if (value === undefined || value === null) {
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        if (value.length === 0) continue;
+        result += `\n${spaces}${key}:`;
+        for (const item of value) {
+          if (typeof item === 'object' && item !== null) {
+            result += `\n${spaces}  - ${formatYamlObject(item, indent + 4).trim()}`;
+          } else {
+            result += `\n${spaces}  - ${JSON.stringify(item)}`;
+          }
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        result += `\n${spaces}${key}:${formatYamlObject(value, indent + 2)}`;
+      } else if (typeof value === 'string') {
+        result += `\n${spaces}${key}: "${value}"`;
+      } else if (typeof value === 'boolean') {
+        result += `\n${spaces}${key}: ${value ? 'true' : 'false'}`;
+      } else {
+        result += `\n${spaces}${key}: ${value}`;
+      }
+    }
+  } else {
+    result = String(obj);
+  }
+
+  return result;
+}
+
+// Simple YAML generator using js-yaml alternative
+export function generateSimpleYaml(proxies: ProxyNode[]): string {
+  if (proxies.length === 0) {
+    return '# No proxies found\n';
+  }
+
+  const lines: string[] = [];
+
+  lines.push('mixed-port: 7890');
+  lines.push('allow-lan: true');
+  lines.push('mode: rule');
+  lines.push('log-level: info');
+  lines.push('external-controller: 127.0.0.1:9090');
+  lines.push('');
+  lines.push('proxies:');
+
+  for (const proxy of proxies) {
+    const proxyLines = formatProxy(proxy);
+    for (const line of proxyLines) {
+      lines.push('  ' + line);
+    }
+  }
+
+  lines.push('');
+  lines.push('proxy-groups:');
+  lines.push(`  - name: Proxy`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  for (const proxy of proxies) {
+    lines.push(`      - "${proxy.name}"`);
+  }
+
+  lines.push('');
+  lines.push('rules:');
+  lines.push('  - GEOIP,CN,DIRECT');
+  lines.push('  - MATCH,Proxy');
+
+  return lines.join('\n');
+}
+
+function formatProxy(proxy: ProxyNode): string[] {
+  const lines: string[] = [];
+
+  switch (proxy.type) {
+    case 'ss':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: ss`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      lines.push(`  cipher: ${proxy.cipher || 'aes-256-gcm'}`);
+      lines.push(`  udp: ${proxy.udp !== false}`);
+      if (proxy.password) lines.push(`  password: "${proxy.password}"`);
+      break;
+
+    case 'ssr':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: ssr`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      lines.push(`  cipher: ${proxy.cipher}`);
+      lines.push(`  password: "${proxy.password}"`);
+      lines.push(`  protocol: ${proxy.protocol}`);
+      if (proxy.protocolparam) lines.push(`  protocolparam: "${proxy.protocolparam}"`);
+      lines.push(`  obfs: ${proxy.obfs}`);
+      if (proxy.obfsparam) lines.push(`  obfsparam: "${proxy.obfsparam}"`);
+      break;
+
+    case 'vmess':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: vmess`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      lines.push(`  uuid: "${proxy.uuid}"`);
+      lines.push(`  alterId: ${proxy.alterId || 0}`);
+      lines.push(`  cipher: ${proxy.cipher || 'auto'}`);
+      lines.push(`  udp: ${proxy.udp !== false}`);
+      lines.push(`  tls: ${proxy.tls || false}`);
+      lines.push(`  skip-cert-verify: ${proxy['skip-cert-verify'] || false}`);
+      lines.push(`  network: ${proxy.network || 'tcp'}`);
+      if (proxy.servername) lines.push(`  servername: "${proxy.servername}"`);
+      if (proxy['ws-opts']) {
+        lines.push(`  ws-opts:`);
+        if (proxy['ws-opts'].path) lines.push(`    path: "${proxy['ws-opts'].path}"`);
+        if (proxy['ws-opts'].headers?.Host) lines.push(`    headers:`);
+        if (proxy['ws-opts'].headers?.Host) lines.push(`      Host: "${proxy['ws-opts'].headers.Host}"`);
+      }
+      break;
+
+    case 'trojan':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: trojan`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      lines.push(`  password: "${proxy.password}"`);
+      lines.push(`  udp: ${proxy.udp !== false}`);
+      lines.push(`  skip-cert-verify: ${proxy['skip-cert-verify'] || false}`);
+      if (proxy.sni) lines.push(`  sni: "${proxy.sni}"`);
+      if (proxy.network) lines.push(`  network: ${proxy.network}`);
+      break;
+
+    case 'hysteria':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: hysteria`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      if (proxy.auth) lines.push(`  auth: "${proxy.auth}"`);
+      if (proxy.protocol) lines.push(`  protocol: ${proxy.protocol}`);
+      lines.push(`  skip-cert-verify: ${proxy['skip-cert-verify'] || false}`);
+      if (proxy.sni) lines.push(`  sni: "${proxy.sni}"`);
+      if (proxy.up) lines.push(`  up: ${proxy.up}`);
+      if (proxy.down) lines.push(`  down: ${proxy.down}`);
+      if (proxy.alpn) lines.push(`  alpn: ${proxy.alpn}`);
+      break;
+
+    case 'vless':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: vless`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      lines.push(`  uuid: "${proxy.uuid}"`);
+      lines.push(`  udp: ${proxy.udp !== false}`);
+      lines.push(`  tls: ${proxy.tls || false}`);
+      lines.push(`  skip-cert-verify: ${proxy['skip-cert-verify'] || false}`);
+      lines.push(`  network: ${proxy.network || 'tcp'}`);
+      if (proxy.servername) lines.push(`  servername: "${proxy.servername}"`);
+      if (proxy.flow) lines.push(`  flow: "${proxy.flow}"`);
+      if (proxy['ws-opts']) {
+        lines.push(`  ws-opts:`);
+        if (proxy['ws-opts'].path) lines.push(`    path: "${proxy['ws-opts'].path}"`);
+        if (proxy['ws-opts'].headers?.Host) lines.push(`    headers:`);
+        if (proxy['ws-opts'].headers?.Host) lines.push(`      Host: "${proxy['ws-opts'].headers.Host}"`);
+      }
+      break;
+
+    case 'http':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: http`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      if (proxy.username) lines.push(`  username: "${proxy.username}"`);
+      if (proxy.password) lines.push(`  password: "${proxy.password}"`);
+      lines.push(`  tls: ${proxy.tls || false}`);
+      break;
+
+    case 'socks5':
+      lines.push(`- name: "${proxy.name}"`);
+      lines.push(`  type: socks5`);
+      lines.push(`  server: "${proxy.server}"`);
+      lines.push(`  port: ${proxy.port}`);
+      if (proxy.username) lines.push(`  username: "${proxy.username}"`);
+      if (proxy.password) lines.push(`  password: "${proxy.password}"`);
+      lines.push(`  udp: ${proxy.udp !== false}`);
+      break;
+  }
+
+  return lines;
+}
