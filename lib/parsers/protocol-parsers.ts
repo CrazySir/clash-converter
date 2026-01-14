@@ -170,6 +170,32 @@ export function parseTrojan(link: string): ParsedProxy | null {
   }
 }
 
+// Hysteria2 parser: hysteria2://uuid@server:port?params#name
+export function parseHysteria2(link: string): ParsedProxy | null {
+  if (!link.startsWith('hysteria2://')) return null;
+
+  try {
+    const url = new URL(link);
+    const params = parseUrlParams(url.search.slice(1));
+    const name = url.hash ? decodeURIComponent(url.hash.slice(1)) : 'Hysteria2';
+
+    return {
+      name,
+      config: {
+        name,
+        type: 'hysteria2',
+        server: url.hostname,
+        port: parseInt(url.port, 10),
+        password: decodeURIComponent(url.username),
+        'skip-cert-verify': params.insecure === '1',
+        sni: params.sni || '',
+      } as ProxyNode,
+    };
+  } catch {
+    return null;
+  }
+}
+
 // Hysteria parser: hysteria://server:port?params#name
 export function parseHysteria(link: string): ParsedProxy | null {
   if (!link.startsWith('hysteria://')) return null;

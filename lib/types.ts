@@ -1,7 +1,7 @@
 // Proxy node types for Clash configuration
 export interface ProxyNode {
   name: string;
-  type: 'ss' | 'ssr' | 'vmess' | 'trojan' | 'hysteria' | 'vless' | 'http' | 'socks5';
+  type: 'ss' | 'ssr' | 'vmess' | 'trojan' | 'hysteria' | 'hysteria2' | 'vless' | 'http' | 'socks5';
   server: string;
   port: number;
   [key: string]: any;

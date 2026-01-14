@@ -1,5 +1,5 @@
 import { ParsedProxy, ProxyNode } from '../types';
-import { parseSS, parseSSR, parseVmess, parseTrojan, parseHysteria, parseVless, parseHttp, parseSocks5, parseTelegramLink } from './protocol-parsers';
+import { parseSS, parseSSR, parseVmess, parseTrojan, parseHysteria, parseHysteria2, parseVless, parseHttp, parseSocks5, parseTelegramLink } from './protocol-parsers';
 
 export function parseProxyLink(link: string): ParsedProxy | null {
   link = link.trim();
@@ -11,6 +11,7 @@ export function parseProxyLink(link: string): ParsedProxy | null {
     parseSSR,
     parseVmess,
     parseTrojan,
+    parseHysteria2,
     parseHysteria,
     parseVless,
     parseHttp,

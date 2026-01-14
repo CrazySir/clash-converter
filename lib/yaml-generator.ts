@@ -196,35 +196,121 @@ export function generateSimpleYaml(proxies: ProxyNode[]): string {
   }
 
   const lines: string[] = [];
+  const now = new Date();
+  const createTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-  lines.push('mixed-port: 7890');
+  // Header
+  lines.push('#');
+  lines.push('#-------------------------------------------------------------#');
+  lines.push('#  author：https://clashconverter.com');
+  lines.push(`#  create_time：${createTime}`);
+  lines.push(`#  node num：${proxies.length}`);
+  lines.push('#-------------------------------------------------------------#');
+  lines.push('#');
+  lines.push('port: 7890');
+  lines.push('socks-port: 7891');
   lines.push('allow-lan: true');
-  lines.push('mode: rule');
+  lines.push('mode: Rule');
   lines.push('log-level: info');
-  lines.push('external-controller: 127.0.0.1:9090');
+  lines.push('external-controller: 0.0.0.0:9090');
   lines.push('');
   lines.push('proxies:');
 
+  // Proxies in single-line JSON format
   for (const proxy of proxies) {
-    const proxyLines = formatProxy(proxy);
-    for (const line of proxyLines) {
-      lines.push('  ' + line);
-    }
+    lines.push('  ' + formatProxyJson(proxy));
   }
 
+  // Generate unique names to avoid duplicates
+  const uniqueNames = Array.from(new Set(proxies.map(p => p.name)));
+
+  // Proxy groups
   lines.push('');
   lines.push('proxy-groups:');
-  lines.push(`  - name: Proxy`);
+  lines.push(`  - name: 🚀 节点选择`);
   lines.push(`    type: select`);
   lines.push(`    proxies:`);
-  for (const proxy of proxies) {
-    lines.push(`      - "${proxy.name}"`);
+  lines.push(`      - ♻️ 自动选择`);
+  lines.push(`      - DIRECT`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
   }
 
-  lines.push('');
-  lines.push('rules:');
-  lines.push('  - GEOIP,CN,DIRECT');
-  lines.push('  - MATCH,Proxy');
+  lines.push(`  - name: ♻️ 自动选择`);
+  lines.push(`    type: url-test`);
+  lines.push(`    url: http://www.gstatic.com/generate_204`);
+  lines.push(`    interval: 300`);
+  lines.push(`    tolerance: 50`);
+  lines.push(`    proxies:`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
+  }
+
+  lines.push(`  - name: 🌍 国外媒体`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - 🚀 节点选择`);
+  lines.push(`      - ♻️ 自动选择`);
+  lines.push(`      - 🎯 全球直连`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
+  }
+
+  lines.push(`  - name: 📲 电报信息`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - 🚀 节点选择`);
+  lines.push(`      - 🎯 全球直连`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
+  }
+
+  lines.push(`  - name: Ⓜ️ 微软服务`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - 🎯 全球直连`);
+  lines.push(`      - 🚀 节点选择`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
+  }
+
+  lines.push(`  - name: 🍎 苹果服务`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - 🚀 节点选择`);
+  lines.push(`      - 🎯 全球直连`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
+  }
+
+  lines.push(`  - name: 🎯 全球直连`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - DIRECT`);
+  lines.push(`      - 🚀 节点选择`);
+  lines.push(`      - ♻️ 自动选择`);
+
+  lines.push(`  - name: 🛑 全球拦截`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - REJECT`);
+  lines.push(`      - DIRECT`);
+
+  lines.push(`  - name: 🍃 应用净化`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - REJECT`);
+  lines.push(`      - DIRECT`);
+
+  lines.push(`  - name: 🐟 漏网之鱼`);
+  lines.push(`    type: select`);
+  lines.push(`    proxies:`);
+  lines.push(`      - 🚀 节点选择`);
+  lines.push(`      - 🎯 全球直连`);
+  lines.push(`      - ♻️ 自动选择`);
+  for (const name of uniqueNames) {
+    lines.push(`      - ${name}`);
+  }
 
   return lines.join('\n');
 }
@@ -345,4 +431,91 @@ function formatProxy(proxy: ProxyNode): string[] {
   }
 
   return lines;
+}
+
+// Format proxy as single-line JSON for Clash YAML
+function formatProxyJson(proxy: ProxyNode): string {
+  const obj: any = {
+    type: proxy.type,
+    name: proxy.name,
+    server: proxy.server,
+    port: proxy.port,
+  };
+
+  switch (proxy.type) {
+    case 'ss':
+      obj.cipher = proxy.cipher || 'aes-256-gcm';
+      obj.password = proxy.password;
+      obj.udp = proxy.udp ?? true;
+      break;
+
+    case 'ssr':
+      obj.cipher = proxy.cipher;
+      obj.password = proxy.password;
+      obj.protocol = proxy.protocol;
+      if (proxy.protocolparam) obj.protocolparam = proxy.protocolparam;
+      obj.obfs = proxy.obfs;
+      if (proxy.obfsparam) obj.obfsparam = proxy.obfsparam;
+      break;
+
+    case 'vmess':
+      obj.uuid = proxy.uuid;
+      obj.alterId = proxy.alterId || 0;
+      obj.cipher = proxy.cipher || 'auto';
+      obj.udp = proxy.udp ?? true;
+      obj.network = proxy.network || 'tcp';
+      if (proxy['ws-opts']) {
+        obj['ws-opts'] = proxy['ws-opts'];
+      }
+      break;
+
+    case 'trojan':
+      obj.password = proxy.password;
+      obj.udp = proxy.udp ?? true;
+      if (proxy['skip-cert-verify']) obj['skip-cert-verify'] = proxy['skip-cert-verify'];
+      if (proxy.sni) obj.sni = proxy.sni;
+      break;
+
+    case 'hysteria':
+      obj.auth = proxy.auth;
+      obj.protocol = proxy.protocol || 'udp';
+      if (proxy['skip-cert-verify']) obj['skip-cert-verify'] = proxy['skip-cert-verify'];
+      if (proxy.sni) obj.sni = proxy.sni;
+      obj.up = proxy.up || '10';
+      obj.down = proxy.down || '50';
+      obj.alpn = proxy.alpn || 'h3';
+      break;
+
+    case 'hysteria2':
+      obj.password = proxy.password;
+      if (proxy['skip-cert-verify']) obj['skip-cert-verify'] = proxy['skip-cert-verify'];
+      if (proxy.sni) obj.sni = proxy.sni;
+      break;
+
+    case 'vless':
+      obj.uuid = proxy.uuid;
+      obj.udp = proxy.udp ?? true;
+      obj.network = proxy.network || 'tcp';
+      if (proxy.tls) obj.tls = proxy.tls;
+      if (proxy['skip-cert-verify']) obj['skip-cert-verify'] = proxy['skip-cert-verify'];
+      if (proxy.flow) obj.flow = proxy.flow;
+      if (proxy['ws-opts']) {
+        obj['ws-opts'] = proxy['ws-opts'];
+      }
+      break;
+
+    case 'http':
+      if (proxy.username) obj.username = proxy.username;
+      if (proxy.password) obj.password = proxy.password;
+      if (proxy.tls) obj.tls = proxy.tls;
+      break;
+
+    case 'socks5':
+      if (proxy.username) obj.username = proxy.username;
+      if (proxy.password) obj.password = proxy.password;
+      obj.udp = proxy.udp ?? true;
+      break;
+  }
+
+  return JSON.stringify(obj);
 }

@@ -1,4 +1,4 @@
-# 2clash
+# Clash Converter
 
 ## 需求文档
 
