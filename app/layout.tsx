@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { Toaster } from "sonner";
+import { GoogleAnalytics } from "@/components/google-analytics";
+import { GoogleAdSense } from "@/components/google-adsense";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,6 +16,10 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Get environment variables
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID;
 
 export const metadata: Metadata = {
   title: "Clash Converter - Proxy Configuration Converter",
@@ -34,7 +40,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {ADSENSE_ID && (
+          <meta
+            name="google-adsense-account"
+            content={ADSENSE_ID}
+          />
+        )}
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <GoogleAnalytics gaId={GA_ID || ''} />
+        <GoogleAdSense adsenseId={ADSENSE_ID || ''} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
