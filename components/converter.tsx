@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,6 +27,8 @@ export function Converter() {
   const [mode, setMode] = useState<ConversionMode>('proxies-to-yaml');
   const [dialogOpen, setDialogOpen] = useState(false);
   const { t } = useLanguage();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const pendingInputRef = useRef<string | null>(null);
 
   // Parse input based on mode
   const result = useMemo(() => {
@@ -40,6 +42,25 @@ export function Converter() {
       return proxiesToLinks(proxies).join('\n');
     }
   }, [input, mode]);
+
+  // Handle pending input after mode change
+  useEffect(() => {
+    if (pendingInputRef.current !== null) {
+      setInput(pendingInputRef.current);
+      pendingInputRef.current = null;
+    }
+  }, [mode]);
+
+  // Reset textarea scroll position when mode or input changes
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is updated before resetting scroll
+    requestAnimationFrame(() => {
+      if (textareaRef.current) {
+        textareaRef.current.scrollLeft = 0;
+        textareaRef.current.scrollTop = 0;
+      }
+    });
+  }, [mode, input]);
 
   const handleCopy = async () => {
     try {
@@ -65,10 +86,14 @@ export function Converter() {
   };
 
   const handleSwapMode = () => {
+    // Capture the current result before any state changes
     const currentResult = result;
     const newMode = mode === 'proxies-to-yaml' ? 'yaml-to-proxies' : 'proxies-to-yaml';
+
+    // Store the result to be applied after mode change
+    pendingInputRef.current = currentResult;
+    // Change mode first - the useEffect will then update the input
     setMode(newMode);
-    setInput(currentResult);
   };
 
   const itemCount = mode === 'proxies-to-yaml'
@@ -150,6 +175,7 @@ export function Converter() {
           </Dialog>
           <CardContent>
             <Textarea
+              ref={textareaRef}
               placeholder={t.inputPlaceholder[mode]}
               value={input}
               onChange={(e) => setInput(e.target.value)}

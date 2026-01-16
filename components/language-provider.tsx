@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { Language, translations } from '@/lib/translations';
 
+export type { Language } from '@/lib/translations';
+
 type LanguageContextType = {
   language: Language;
   setLanguage: (lang: Language) => void;
