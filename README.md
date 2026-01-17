@@ -1,52 +1,166 @@
 # Clash Converter
 
-## 需求文档
+A client-side proxy configuration converter that transforms various proxy protocols into Clash YAML format. Built with Next.js 16, featuring real-time preview, multi-language support, and comprehensive SEO optimization.
 
-convert config to clash yaml
+[![Clash Converter](https://img.shields.io/badge/Clash-Converter-blue)](https://clashconverter.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.1-black)](https://nextjs.org/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-1. 域名: clashconverter.com     - 最佳 SEO + 清晰功能 
+## Features
 
+- **Client-side Processing**: All conversions happen in your browser - your proxy configurations are never sent to any server
+- **Multi-Protocol Support**: Supports 9 proxy protocols
+  - Shadowsocks (SS)
+  - ShadowsocksR (SSR)
+  - VMess
+  - VLESS
+  - Trojan
+  - Hysteria / Hysteria2
+  - HTTP / HTTPS
+  - SOCKS5
+  - Telegram SOCKS links
+- **Bidirectional Conversion**: Convert proxy links to Clash YAML and vice versa
+- **Kernel Selection**: Generate configs for Clash Meta (Mihomo) or Clash Premium
+- **DNS Configuration**: Includes comprehensive DNS settings with fake-ip mode
+- **IP-Based Locale Detection**: Automatically detects user location and redirects to appropriate language
+- **Multi-Language**: English and Simplified Chinese (简体中文)
+- **Theme Support**: Dark/Light mode with system preference detection
+- **Live Preview**: Real-time preview of generated YAML
+- **Download Support**: One-click download of generated configuration files
 
-这是项目能够实现将各种类型协议的代理 转化为 `clash yaml` 格式
+## Supported Protocols
 
-- 使用 [shadcn component](https://ui.shadcn.com/docs/components) 构建纯前端静态服务，保证用户输入的内容不被保存到后端数据库
-- 支持多语言：`简体中文/English`
-- 支持预览功能；生成的 `yaml` 后，用户能直接下载该文件
-- 支持昼夜主题切换，默认跟随系统主题
-- 丰富的 `SEO` 配置能力，能偶帮助我快速获取 `google` 的自然流量
-- 支持 `google adsence` 和 `google analytics` 环境变量接入
- 
----
-
-`example`: 将如下协议内容转化为 `clash yaml` 配置文件: `target.yaml`
-
-```text
-ss://YWVzLTI1Ni1nY206ZzVNZUQ2RnQzQ1dsSklkQDE5OC41Ny4yNy4yMTg6NTAwNA==#SS-HongKongNode1
-vmess://eyJhZGQiOiIxNTQuMjMuMTkwLjE2MiIsInYiOjIsInBzIjoidjJyYXlzZV90ZXN0IiwicG9ydCI6NDQzLCJpZCI6ImI5OTg0Njc0LWY3NzEtNGU2Ny1hMTk4LWM3ZTYwNzIwYmEyYyIsImFpZCI6IjAiLCJzY3kiOiJhdXRvIiwibmV0Ijoid3MiLCJ0eXBlIjoiIiwidGxzIjoiIn0=#Vmess-HongKongNode1
-ssr://MjAuMjM5LjQ5LjQ0OjU5ODE0Om9yaWdpbjpub25lOnBsYWluOk0yUm1OVGN5TnpZdE1ETmxaaTAwTldObUxXSmtaRFF0TkdWa1lqWmtabUZoTUdWbS8/Z3JvdXA9YUhSMGNITTZMeTkyTW5KaGVYTmxMbU52YlE9PSZyZW1hcms9ZGpKeVlYbHpaVjkwWlhOMA==#SSRHongKongNode1
-trojan://bc7593fe-0604-4fbe-a70bYWVzLTI1Ni1nY206Q1VuZFNabllzUEtjdTaclWNFc1RmRBNk5NQU5KSnga3fa58ac5a3ef0-b4ab-11eb-b65e-1239d0255272@ca-trojan.bonds.id:443#Torjan-HongKongNode1
-http://username:password@1.1.1.1:9999#Http-HongKongNode1
-socks5://1.1.1.1:52443#Sock5-HongKongNode1
-hysteria://1.1.1.1:51443?protocol=udp&auth=pekopeko&peer=wechat.com&insecure=1&upmbps=50&downmbps=250&alpn=h3#hyV1-HongKongNode1
-hysteria://1.1.1.1:55443?protocol=udp&auth=pekopeko&peer=wechat.com&insecure=1&upmbps=50&downmbps=250&alpn=h3#hyV2-HongKongNode1
-vless://aaa-bbb-ccc-ddd-eee@1.1.1.1:60443?encryption=none&security=tls&type=tcp&headerType=none#Vless-HongKongNode1
-https://t.me/socks?server=1.1.1.1&port=61443&user=username&pass=password#Https-HongKongNode1
-```
+| Protocol | Format Example |
+|----------|----------------|
+| SS | `ss://base64(method:password@server:port)#name` |
+| SSR | `ssr://base64#name` |
+| VMess | `vmess://base64(json)#name` |
+| VLESS | `vless://uuid@server:port?params#name` |
+| Trojan | `trojan://password@server:port#name` |
+| Hysteria | `hysteria://server:port?params#name` |
+| Hysteria2 | `hysteria2://password@server:port/?params#name` |
+| HTTP | `http://user:pass@server:port#name` |
+| SOCKS5 | `socks5://server:port#name` |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- pnpm (recommended) or npm
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone the repository
+git clone https://github.com/yourusername/clashconverter.git
+cd clashconverter
+
+# Install dependencies
+pnpm install
+
+# Start development server
 pnpm dev
-# or
-bun dev
 ```
 
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
+### Build for Production
 
+```bash
+pnpm build
+pnpm start
+```
 
+## Project Structure
+
+```
+clashconverter/
+├── app/                      # Next.js App Router
+│   ├── [locale]/             # Localized routes
+│   │   └── page.tsx          # Main converter page
+│   ├── layout.tsx            # Root layout
+│   └── globals.css           # Global styles
+├── components/               # React components
+│   ├── converter.tsx         # Main converter component
+│   ├── language-toggle.tsx   # Language selector
+│   ├── theme-toggle.tsx      # Theme switcher
+│   ├── google-analytics.tsx  # GA integration
+│   └── ui/                   # shadcn/ui components
+├── lib/                      # Core utilities
+│   ├── parsers/              # Protocol parsers
+│   │   ├── index.ts          # Parser orchestration
+│   │   └── protocol-parsers.ts  # Individual protocol parsers
+│   ├── types.ts              # TypeScript type definitions
+│   ├── yaml-parser.ts        # YAML to proxy links
+│   ├── yaml-generator.ts     # Proxy links to YAML
+│   ├── rules-content.ts      # Clash rules
+│   └── utils.ts              # Utility functions
+├── messages/                 # next-intl translations
+│   ├── en.json               # English translations
+│   └── zh.json               # Chinese translations
+├── middleware.ts             # Next.js middleware for routing
+└── public/                   # Static assets
+```
+
+## Technology Stack
+
+- **Framework**: Next.js 16.1.1 (App Router)
+- **Language**: TypeScript 5.6+ (strict mode)
+- **Styling**: Tailwind CSS v4
+- **Components**: shadcn/ui (New York style, Stone color scheme)
+- **Icons**: Lucide React
+- **Internationalization**: next-intl v4
+- **Notifications**: Sonner
+- **Theme**: next-themes
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```bash
+# Google Analytics (optional)
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# Google AdSense (optional)
+NEXT_PUBLIC_ADSENSE_ID=ca-pub-XXXXXXXXXXXXXXXX
+```
+
+### Kernel Compatibility
+
+| Feature | Clash Meta (Mihomo) | Clash Premium |
+|---------|---------------------|---------------|
+| VLESS | ✅ | ❌ |
+| Hysteria | ✅ | ❌ |
+| Hysteria2 | ✅ | ❌ |
+| VMess | ✅ | ✅ |
+| Trojan | ✅ | ✅ |
+| SS | ✅ | ✅ |
+| SSR | ✅ | ✅ |
+
+## SEO
+
+The application is optimized for search engines with:
+- Meta tags for social sharing (Open Graph, Twitter Card)
+- Structured data markup
+- Sitemap generation
+- Robots.txt configuration
+- Optimized page titles and descriptions
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
+
+---
+
+**Domain**: [clashconverter.com](https://clashconverter.com)
