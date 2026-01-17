@@ -316,7 +316,7 @@ export function generateSimpleYaml(proxies: ProxyNode[]): string {
     lines.push(`      - ${name}`);
   }
 
-  // Add complete rules from target.yaml
+  // Add complete rules from target-template/clash.yaml
   lines.push('');
   lines.push(CLASH_RULES);
 

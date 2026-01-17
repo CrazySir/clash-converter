@@ -162,8 +162,8 @@ export function Converter() {
 
         <div className="grid gap-4 md:gap-8 md:grid-cols-2 relative">
           {/* Input Section */}
-          <Card>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 cursor-pointer hover:text-stone-600 dark:hover:text-stone-400 transition-colors" onClick={() => setDialogOpen(true)}>
@@ -177,42 +177,7 @@ export function Converter() {
                   </DialogTrigger>
                 </div>
               </CardHeader>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>{t('supportedProtocols')}</DialogTitle>
-                  <DialogDescription>
-                    All proxy protocols are supported for conversion
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Shadowsocks</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">ShadowsocksR</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Vmess</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">VLESS</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Trojan</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Hysteria</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">HTTP</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                    <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">SOCKS5</span>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <CardContent>
+              <CardContent>
               <Textarea
                   ref={textareaRef}
                   placeholder={t(`inputPlaceholder.${mode}`)}
@@ -235,6 +200,41 @@ export function Converter() {
               </div>
             </CardContent>
           </Card>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('supportedProtocols')}</DialogTitle>
+              <DialogDescription>
+                All proxy protocols are supported for conversion
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Shadowsocks</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">ShadowsocksR</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Vmess</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">VLESS</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Trojan</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Hysteria</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">HTTP</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">SOCKS5</span>
+              </div>
+            </div>
+          </DialogContent>
+          </Dialog>
 
           {/* Swap Button (centered) */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block z-10">

@@ -5,6 +5,16 @@ export function parseProxyLink(link: string): ParsedProxy | null {
   link = link.trim();
   if (!link) return null;
 
+  // Check protocol prefix (case-insensitive) but keep original casing for base64 content
+  const protocol = link.split(':')[0].toLowerCase();
+  const hasKnownProtocol = ['ss', 'ssr', 'vmess', 'trojan', 'hysteria', 'hysteria2', 'vless', 'http', 'https', 'socks', 'socks5'].includes(protocol);
+
+  // If it has a known protocol, only lowercase the protocol part
+  if (hasKnownProtocol && link.includes('://')) {
+    const protocolEnd = link.indexOf('://');
+    link = link.substring(0, protocolEnd).toLowerCase() + link.substring(protocolEnd);
+  }
+
   // Try each parser
   const parsers = [
     parseSS,

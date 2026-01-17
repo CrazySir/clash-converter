@@ -28,7 +28,8 @@
       "Bash(taskkill:*)",
       "Bash(netstat:*)",
       "Bash(xargs -I {} taskkill //F //PID:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(timeout:*)"
     ]
   }
 }

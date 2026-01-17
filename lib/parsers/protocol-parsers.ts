@@ -105,21 +105,30 @@ export function parseSSR(link: string): ParsedProxy | null {
   }
 }
 
-// VMess parser: vmess://base64(json)
+// VMess parser: vmess://base64(json)#name
 export function parseVmess(link: string): ParsedProxy | null {
   if (!link.startsWith('vmess://')) return null;
 
   try {
-    const encoded = link.slice(8);
+    // Remove vmess:// prefix
+    const rest = link.slice(8);
+
+    // Split by # to get name (the part after # is the node name)
+    const hashIndex = rest.indexOf('#');
+    const encoded = hashIndex !== -1 ? rest.slice(0, hashIndex) : rest;
+    const name = hashIndex !== -1 ? decodeURIComponent(rest.slice(hashIndex + 1)) : null;
+
     const decoded = base64Decode(encoded);
     const config = safeJsonParse<any>(decoded, null);
 
     if (!config) return null;
 
+    const nodeName = name || config.ps || 'Vmess';
+
     return {
-      name: config.ps || 'Vmess',
+      name: nodeName,
       config: {
-        name: config.ps || 'Vmess',
+        name: nodeName,
         type: 'vmess',
         server: config.add,
         port: parseInt(config.port, 10),

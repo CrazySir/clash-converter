@@ -57,10 +57,6 @@ components.json         # shadcn/ui configuration
 5. **SEO**: Optimized for Google traffic
 6. **Analytics**: Google AdSense and Google Analytics via environment variables
 
-## Reference Implementation
-
-For the conversion UI and functionality logic: https://v1.v2rayse.com/en/v2ray-clash
-
 ## SEO Domain
 
 Primary domain: clashconverter.com
