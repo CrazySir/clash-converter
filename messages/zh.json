@@ -51,6 +51,7 @@
     }
   },
   "protocolFiltered": "已过滤掉 {count} 个 {protocol} 节点（Clash Premium 不支持）",
+  "unsupportedProtocol": "不支持的协议：{protocol}",
   "unsupportedProtocols": {
     "vless": "VLESS",
     "hysteria": "Hysteria",

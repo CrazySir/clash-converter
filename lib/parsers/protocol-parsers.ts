@@ -68,27 +68,35 @@ export function parseSS(link: string): ParsedProxy | null {
   }
 }
 
-// ShadowsocksR parser: ssr://base64
+// ShadowsocksR parser: ssr://base64#name
 export function parseSSR(link: string): ParsedProxy | null {
   if (!link.startsWith('ssr://')) return null;
 
   try {
-    const encoded = link.slice(6).split('/')[0];
+    // Remove ssr:// prefix
+    const rest = link.slice(6);
+
+    // Split by # to get name (the part after # is the node name)
+    const hashIndex = rest.indexOf('#');
+    const mainPart = hashIndex !== -1 ? rest.slice(0, hashIndex) : rest;
+    const name = hashIndex !== -1 ? decodeURIComponent(rest.slice(hashIndex + 1)) : null;
+
+    const encoded = mainPart.split('/')[0];
     const decoded = base64Decode(encoded);
 
     // Format: server:port:protocol:method:obfs:passwordbase64/?params
     const parts = decoded.split('/?');
-    const mainPart = parts[0];
+    const configMainPart = parts[0];
     const params = parseUrlParams(parts[1] || '');
 
-    const [server, port, protocol, method, obfs, passwordB64] = mainPart.split(':');
+    const [server, port, protocol, method, obfs, passwordB64] = configMainPart.split(':');
     const password = base64Decode(passwordB64);
-    const name = params.remarks ? base64Decode(params.remarks) : 'SSR';
+    const nodeName = name || (params.remarks ? base64Decode(params.remarks) : 'SSR');
 
     return {
-      name,
+      name: nodeName,
       config: {
-        name,
+        name: nodeName,
         type: 'ssr',
         server,
         port: parseInt(port, 10),

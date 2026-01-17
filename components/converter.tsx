@@ -47,20 +47,37 @@ export function Converter() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingInputRef = useRef<string | null>(null);
   const previousFilteredCountRef = useRef<Record<string, number>>({});
+  const previousUnsupportedProtocolsRef = useRef<Set<string>>(new Set());
 
   // Parse input based on mode
   const result = useMemo(() => {
-    if (!input.trim()) return '';
+    if (!input.trim()) {
+      // Reset tracking when input is empty
+      previousUnsupportedProtocolsRef.current = new Set();
+      previousFilteredCountRef.current = {};
+      return '';
+    }
 
     if (mode === 'proxies-to-yaml') {
-      let proxies = parseMultipleProxies(input);
+      const { proxies, unsupported } = parseMultipleProxies(input);
+
+      // Show toast for unsupported protocols
+      const uniqueUnsupported = Array.from(new Set(unsupported));
+      uniqueUnsupported.forEach(protocol => {
+        if (!previousUnsupportedProtocolsRef.current.has(protocol)) {
+          toast.error(t('unsupportedProtocol', { protocol: protocol.toUpperCase() }));
+        }
+      });
+      // Update previous unsupported protocols
+      previousUnsupportedProtocolsRef.current = new Set(uniqueUnsupported);
+
+      let filteredProxies = proxies;
 
       // Filter protocols for Clash Premium
       if (kernelType === 'clash-premium') {
         const filteredCounts: Record<string, number> = {};
-        const beforeCount = proxies.length;
 
-        proxies = proxies.filter(proxy => {
+        filteredProxies = proxies.filter(proxy => {
           if (CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS.includes(proxy.type)) {
             filteredCounts[proxy.type] = (filteredCounts[proxy.type] || 0) + 1;
             return false;
@@ -86,7 +103,7 @@ export function Converter() {
         previousFilteredCountRef.current = {};
       }
 
-      return generateSimpleYaml(proxies);
+      return generateSimpleYaml(filteredProxies);
     } else {
       const proxies = parseYamlToProxies(input);
       return proxiesToLinks(proxies).join('\n');
@@ -147,7 +164,7 @@ export function Converter() {
   };
 
   const itemCount = mode === 'proxies-to-yaml'
-      ? parseMultipleProxies(input).length
+      ? parseMultipleProxies(input).proxies.length
       : parseYamlToProxies(input).length;
 
   return (

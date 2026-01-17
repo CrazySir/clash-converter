@@ -37,16 +37,29 @@ export function parseProxyLink(link: string): ParsedProxy | null {
   return null;
 }
 
-export function parseMultipleProxies(input: string): ProxyNode[] {
+export function parseMultipleProxies(input: string): { proxies: ProxyNode[]; unsupported: string[] } {
   const lines = input.split(/[\r\n]+/).filter(line => line.trim());
   const proxies: ProxyNode[] = [];
+  const unsupported: string[] = [];
+
+  // Supported protocol types
+  const supportedProtocols = ['ss', 'ssr', 'vmess', 'trojan', 'hysteria', 'hysteria2', 'vless', 'http', 'https', 'socks', 'socks5'];
 
   for (const line of lines) {
     const result = parseProxyLink(line);
     if (result) {
       proxies.push(result.config);
+    } else {
+      // Check if it looks like a proxy link (has ://) but failed to parse
+      if (line.includes('://')) {
+        const protocol = line.split(':')[0].toLowerCase().trim();
+        // Only report if it has a protocol prefix that's not in our supported list
+        if (protocol && !supportedProtocols.includes(protocol)) {
+          unsupported.push(protocol);
+        }
+      }
     }
   }
 
-  return proxies;
+  return { proxies, unsupported };
 }

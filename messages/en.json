@@ -51,6 +51,7 @@
     }
   },
   "protocolFiltered": "{count} {protocol} node(s) filtered out (not supported by Clash Premium)",
+  "unsupportedProtocol": "Unsupported protocol: {protocol}",
   "unsupportedProtocols": {
     "vless": "VLESS",
     "hysteria": "Hysteria",
