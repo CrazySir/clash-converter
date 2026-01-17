@@ -203,7 +203,7 @@ export function Converter() {
               placeholder={t(`inputPlaceholder.${mode}`)}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="min-h-[320px] md:min-h-[420px] resize-none font-mono text-xs md:text-sm border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950/50 focus-visible:ring-stone-300 dark:focus-visible:ring-stone-700 transition-all"
+              className="!h-[300px] md:!h-[400px] resize-none font-mono text-xs md:text-sm border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950/50 focus-visible:ring-stone-300 dark:focus-visible:ring-stone-700 transition-all overflow-auto whitespace-pre"
             />
             <div className="mt-3 flex items-center justify-between">
               <span className="text-xs text-stone-400 dark:text-stone-500">
@@ -288,7 +288,7 @@ export function Converter() {
 
           <div className="relative group">
             <div className="rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 overflow-hidden">
-              <pre className="min-h-[320px] md:min-h-[420px] w-full p-4 text-[10px] md:text-xs font-mono overflow-auto text-stone-600 dark:text-stone-400">
+              <pre className="h-[300px] md:h-[400px] w-full p-4 text-[10px] md:text-xs font-mono overflow-auto text-stone-600 dark:text-stone-400 whitespace-pre">
                 {result || <span className="text-stone-300 dark:text-stone-700">{t(`outputPlaceholder.${mode}`)}</span>}
               </pre>
             </div>
