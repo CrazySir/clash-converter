@@ -171,3 +171,6 @@ vite.config.ts.timestamp-*
 
 # typescript
 next-env.d.ts
+
+# lock file
+pnpm-lock.yaml

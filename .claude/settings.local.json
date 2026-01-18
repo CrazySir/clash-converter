@@ -30,7 +30,8 @@
       "Bash(xargs -I {} taskkill //F //PID:*)",
       "Bash(git mv:*)",
       "Bash(timeout:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(pnpm build:cf:*)"
     ]
   }
 }
