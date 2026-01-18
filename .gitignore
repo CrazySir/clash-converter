@@ -165,7 +165,6 @@ vite.config.ts.timestamp-*
 
 # cloudflare
 .wrangler
-.wrangler.toml
 
 # opennext
 .open-next
