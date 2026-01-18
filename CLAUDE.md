@@ -68,7 +68,7 @@ messages/                 # next-intl translation files
 ├── en.json               # English translations
 └── zh.json               # Simplified Chinese translations
 
-middleware.ts             # Locale detection and routing (Next.js 16 proxy pattern)
+proxy.ts             # Locale detection and routing (Next.js 16 proxy pattern)
 i18n.ts                   # next-intl configuration
 ```
 
@@ -132,7 +132,7 @@ interface ProxyNode {
 ```
 
 ### Locale Detection
-- Uses `proxy.ts` (Next.js 16 proxy pattern) instead of deprecated middleware
+- Uses `proxy.ts` (Next.js 16 proxy pattern) instead of deprecated proxy
 - Detects user country from Cloudflare/Vercel headers: `cf-ipcountry`, `x-vercel-ip-country`
 - Redirects Chinese regions (CN, HK, TW, MO, SG) to `/zh`, others to `/en`
 - Stores preference in `NEXT_LOCALE` cookie (1 year expiry)

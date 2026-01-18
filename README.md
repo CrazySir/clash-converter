@@ -99,7 +99,7 @@ clashconverter/
 ├── messages/                 # next-intl translations
 │   ├── en.json               # English translations
 │   └── zh.json               # Chinese translations
-├── middleware.ts             # Next.js middleware for routing
+├── proxy.ts             # Next.js proxy for routing
 └── public/                   # Static assets
 ```
 
