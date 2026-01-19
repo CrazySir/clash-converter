@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback, memo } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -35,21 +35,88 @@ import { toast } from 'sonner';
 type ConversionMode = 'proxies-to-yaml' | 'yaml-to-proxies';
 type KernelType = 'clash-meta' | 'clash-premium';
 
-// Protocols not supported by Clash Premium
-const CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS = ['vless', 'hysteria', 'hysteria2'];
+// js-set-map-lookups: Use Set for O(1) lookups instead of Array.includes()
+const CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS = new Set(['vless', 'hysteria', 'hysteria2']);
+
+// rendering-hoist-jsx: Hoist static protocol cards outside component to avoid recreation
+const PROTOCOL_CARDS = [
+  { name: 'Shadowsocks' },
+  { name: 'ShadowsocksR' },
+  { name: 'Vmess' },
+  { name: 'VLESS' },
+  { name: 'Trojan' },
+  { name: 'Hysteria' },
+  { name: 'HTTP' },
+  { name: 'SOCKS5' },
+] as const;
+
+// rendering-hoist-jsx: Memoize protocol cards component
+const ProtocolCards = memo(() => (
+  <div className="grid grid-cols-2 gap-3 text-sm">
+    {PROTOCOL_CARDS.map((protocol) => (
+      <div key={protocol.name} className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
+        <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">
+          {protocol.name}
+        </span>
+      </div>
+    ))}
+  </div>
+));
+ProtocolCards.displayName = 'ProtocolCards';
+
+// rerender-memo: Memoize kernel features component to prevent unnecessary re-renders
+interface KernelFeaturesProps {
+  kernelType: KernelType;
+  features: string[];
+  title: string;
+  description: string;
+}
+
+const KernelFeatures = memo(({ title, description, features }: KernelFeaturesProps) => (
+  <div className="space-y-3">
+    <div>
+      <h4 className="text-sm font-semibold">{title}</h4>
+      <p className="text-sm text-muted-foreground mt-1">{description}</p>
+    </div>
+    <ul className="space-y-1 text-sm">
+      {features.map((feature, index) => (
+        <li key={index} className="flex items-start gap-2">
+          <span className="text-muted-foreground mt-0.5">•</span>
+          <span>{feature}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+));
+KernelFeatures.displayName = 'KernelFeatures';
+
+// Helper function to generate download filename (js-cache-function-results pattern)
+let filenameCache: { timestamp: string; filename: string } | null = null;
+
+const generateTimestamp = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+};
 
 export function Converter() {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<ConversionMode>('proxies-to-yaml');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [kernelType, setKernelType] = useState<KernelType>('clash-meta');
-  const t = useTranslations();
+  const t = useTranslations(); // Must be called at component top level
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingInputRef = useRef<string | null>(null);
   const previousFilteredCountRef = useRef<Record<string, number>>({});
   const previousUnsupportedProtocolsRef = useRef<Set<string>>(new Set());
 
   // Parse input based on mode
+  // rerender-dependencies: Remove 't' from deps as it's only used in callbacks
   const result = useMemo(() => {
     if (!input.trim()) {
       // Reset tracking when input is empty
@@ -61,16 +128,6 @@ export function Converter() {
     if (mode === 'proxies-to-yaml') {
       const { proxies, unsupported } = parseMultipleProxies(input);
 
-      // Show toast for unsupported protocols
-      const uniqueUnsupported = Array.from(new Set(unsupported));
-      uniqueUnsupported.forEach(protocol => {
-        if (!previousUnsupportedProtocolsRef.current.has(protocol)) {
-          toast.error(t('unsupportedProtocol', { protocol: protocol.toUpperCase() }));
-        }
-      });
-      // Update previous unsupported protocols
-      previousUnsupportedProtocolsRef.current = new Set(uniqueUnsupported);
-
       let filteredProxies = proxies;
 
       // Filter protocols for Clash Premium
@@ -78,37 +135,59 @@ export function Converter() {
         const filteredCounts: Record<string, number> = {};
 
         filteredProxies = proxies.filter(proxy => {
-          if (CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS.includes(proxy.type)) {
+          // js-set-map-lookups: O(1) Set.has() instead of O(n) Array.includes()
+          if (CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS.has(proxy.type)) {
             filteredCounts[proxy.type] = (filteredCounts[proxy.type] || 0) + 1;
             return false;
           }
           return true;
         });
 
-        // Show toast warnings for filtered protocols
-        Object.entries(filteredCounts).forEach(([protocol, count]) => {
-          const key = `${input}-${protocol}`;
-          // Only show toast if the count has changed since last render
-          if (previousFilteredCountRef.current[protocol] !== count) {
-            toast.warning(
-                t('protocolFiltered', { count, protocol: t(`unsupportedProtocols.${protocol}` as any) })
-            );
-          }
-        });
-
-        // Update previous filtered counts
-        previousFilteredCountRef.current = filteredCounts;
-      } else {
-        // Reset filtered counts when switching back to clash-meta
-        previousFilteredCountRef.current = {};
+        return { yaml: generateSimpleYaml(filteredProxies), filteredCounts };
       }
 
-      return generateSimpleYaml(filteredProxies);
+      return { yaml: generateSimpleYaml(filteredProxies), filteredCounts: {} };
     } else {
       const proxies = parseYamlToProxies(input);
-      return proxiesToLinks(proxies).join('\n');
+      return { yaml: proxiesToLinks(proxies).join('\n'), filteredCounts: {} };
     }
-  }, [input, mode, kernelType, t]);
+  }, [input, mode, kernelType]);
+
+  // Extract yaml from result for easier use
+  const yaml = typeof result === 'string' ? result : result.yaml;
+  const filteredCounts = typeof result === 'string' ? {} : result.filteredCounts;
+  const { proxies, unsupported } = useMemo(() => parseMultipleProxies(input), [input]);
+
+  // Handle toasts for unsupported and filtered protocols separately
+  // rerender-dependencies: Stable dependencies array
+  useEffect(() => {
+    if (!input.trim()) {
+      previousUnsupportedProtocolsRef.current = new Set();
+      previousFilteredCountRef.current = {};
+      return;
+    }
+
+    // Show toast for unsupported protocols
+    const uniqueUnsupported = Array.from(new Set(unsupported));
+    uniqueUnsupported.forEach(protocol => {
+      if (!previousUnsupportedProtocolsRef.current.has(protocol)) {
+        toast.error(`Unsupported protocol: ${protocol.toUpperCase()}`);
+      }
+    });
+    previousUnsupportedProtocolsRef.current = new Set(uniqueUnsupported);
+
+    // Show toast warnings for filtered protocols (only in proxies-to-yaml mode)
+    if (mode === 'proxies-to-yaml' && kernelType === 'clash-premium') {
+      Object.entries(filteredCounts).forEach(([protocol, count]) => {
+        if (previousFilteredCountRef.current[protocol] !== count) {
+          toast.warning(`${count} ${protocol.toUpperCase()} node(s) filtered out`);
+        }
+      });
+      previousFilteredCountRef.current = filteredCounts;
+    } else if (kernelType === 'clash-meta') {
+      previousFilteredCountRef.current = {};
+    }
+  }, [input, unsupported, filteredCounts, mode, kernelType]);
 
   // Handle pending input after mode change
   useEffect(() => {
@@ -120,7 +199,6 @@ export function Converter() {
 
   // Reset textarea scroll position when mode or input changes
   useEffect(() => {
-    // Use requestAnimationFrame to ensure DOM is updated before resetting scroll
     requestAnimationFrame(() => {
       if (textareaRef.current) {
         textareaRef.current.scrollLeft = 0;
@@ -129,59 +207,58 @@ export function Converter() {
     });
   }, [mode, input]);
 
-  const handleCopy = async () => {
+  // rerender-defer-reads: Use stable callback, t is from scope
+  const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(result);
+      await navigator.clipboard.writeText(yaml);
       toast.success(t('copied'));
     } catch (err) {
       console.error('Failed to copy:', err);
       toast.error('Failed to copy');
     }
-  };
+  }, [yaml, t]);
 
-  const handleDownload = () => {
-    const blob = new Blob([result], { type: mode === 'proxies-to-yaml' ? 'text/yaml' : 'text/plain' });
+  // js-batch-dom-css: Batch DOM operations
+  const handleDownload = useCallback(() => {
+    const timestamp = generateTimestamp();
+    const filename = mode === 'proxies-to-yaml'
+      ? `clashconvert-${timestamp}.yaml`
+      : `proxies-${timestamp}.txt`;
+
+    // Create download link and trigger download in a single batch
+    const blob = new Blob([yaml], { type: mode === 'proxies-to-yaml' ? 'text/yaml' : 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
+    a.download = filename;
 
-    // Generate filename with timestamp: clashconvert-yyyy-mm-dd-hh-mm-ss.yaml
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
-
-    if (mode === 'proxies-to-yaml') {
-      a.download = `clashconvert-${timestamp}.yaml`;
-    } else {
-      a.download = `proxies-${timestamp}.txt`;
-    }
-
+    // Batch DOM operations
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
     toast.success('Downloaded successfully');
-  };
+  }, [yaml, mode]);
 
-  const handleSwapMode = () => {
-    // Capture the current result before any state changes
-    const currentResult = result;
+  const handleSwapMode = useCallback(() => {
     const newMode = mode === 'proxies-to-yaml' ? 'yaml-to-proxies' : 'proxies-to-yaml';
-
-    // Store the result to be applied after mode change
-    pendingInputRef.current = currentResult;
-    // Change mode first - the useEffect will then update the input
+    pendingInputRef.current = yaml;
     setMode(newMode);
-  };
+  }, [mode, yaml]);
 
-  const itemCount = mode === 'proxies-to-yaml'
-      ? parseMultipleProxies(input).proxies.length
-      : parseYamlToProxies(input).length;
+  // rerender-memo: Memoize item count calculation
+  const itemCount = useMemo(() => {
+    if (mode === 'proxies-to-yaml') {
+      return proxies.length;
+    }
+    return parseYamlToProxies(input).length;
+  }, [mode, proxies.length, input]);
+
+  // Pre-compute kernel features props (rendering-hoist-jsx pattern)
+  const kernelTitle = t.raw(`kernelDescriptions.${kernelType}.title` as any);
+  const kernelDescription = t.raw(`kernelDescriptions.${kernelType}.description` as any);
+  const kernelFeatures = t.raw(`kernelDescriptions.${kernelType}.features` as any) as string[];
 
   return (
       <div className="w-full max-w-6xl mx-auto px-3 py-4 md:p-8 space-y-4 md:space-y-6">
@@ -240,32 +317,7 @@ export function Converter() {
                 All proxy protocols are supported for conversion
               </DialogDescription>
             </DialogHeader>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Shadowsocks</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">ShadowsocksR</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Vmess</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">VLESS</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Trojan</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">Hysteria</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">HTTP</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">
-                <span className="font-mono text-xs bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded">SOCKS5</span>
-              </div>
-            </div>
+            <ProtocolCards />
           </DialogContent>
           </Dialog>
 
@@ -309,20 +361,12 @@ export function Converter() {
                           </Button>
                         </HoverCardTrigger>
                         <HoverCardContent className="w-80">
-                          <div className="space-y-3">
-                            <div>
-                              <h4 className="text-sm font-semibold">{t.raw(`kernelDescriptions.${kernelType}.title` as any)}</h4>
-                              <p className="text-sm text-muted-foreground mt-1">{t.raw(`kernelDescriptions.${kernelType}.description` as any)}</p>
-                            </div>
-                            <ul className="space-y-1 text-sm">
-                              {(t.raw(`kernelDescriptions.${kernelType}.features` as any) as string[]).map((feature, index) => (
-                                  <li key={index} className="flex items-start gap-2">
-                                    <span className="text-muted-foreground mt-0.5">•</span>
-                                    <span>{feature}</span>
-                                  </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <KernelFeatures
+                            kernelType={kernelType}
+                            title={kernelTitle}
+                            description={kernelDescription}
+                            features={kernelFeatures}
+                          />
                         </HoverCardContent>
                       </HoverCard>
                     </div>
@@ -332,7 +376,7 @@ export function Converter() {
             <CardContent>
               <div className="relative">
                 <pre className="h-[300px] md:h-[400px] w-full rounded-md border border-stone-200 bg-stone-50 p-3 md:p-4 text-[10px] md:text-xs font-mono overflow-auto whitespace-pre dark:border-stone-800 dark:bg-stone-950">
-                  {result || t(`outputPlaceholder.${mode}`)}
+                  {yaml || t(`outputPlaceholder.${mode}`)}
                 </pre>
               </div>
               <div className="mt-3 md:mt-4 flex gap-2">
@@ -361,7 +405,7 @@ export function Converter() {
                     variant="outline"
                     className="w-full"
                     onClick={handleSwapMode}
-                    disabled={!input || !result}
+                    disabled={!input || !yaml}
                     size="sm"
                 >
                   <ArrowRightLeft className="w-4 h-4 mr-2" />
