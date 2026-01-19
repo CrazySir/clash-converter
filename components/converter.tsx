@@ -144,7 +144,23 @@ export function Converter() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = t(`downloadFilename.${mode}`);
+
+    // Generate filename with timestamp: clashconvert-yyyy-mm-dd-hh-mm-ss.yaml
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const timestamp = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+
+    if (mode === 'proxies-to-yaml') {
+      a.download = `clashconvert-${timestamp}.yaml`;
+    } else {
+      a.download = `proxies-${timestamp}.txt`;
+    }
+
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
