@@ -100,7 +100,6 @@ export const HEADER_BANNER = [
   '#',
   '#-------------------------------------------------------------#',
   '#  author：https://clashconverter.com',
-  '',
 ];
 
 // Footer banner lines
