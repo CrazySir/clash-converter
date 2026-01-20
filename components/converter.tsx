@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback, memo } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -25,6 +24,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { PreviewEditor } from '@/components/preview-editor';
 import { parseMultipleProxies } from '@/lib/parsers';
 import { parseYamlToProxies, proxiesToLinks } from '@/lib/yaml-parser';
 import { generateSimpleYaml } from '@/lib/yaml-generator';
@@ -90,9 +90,7 @@ const KernelFeatures = memo(({ title, description, features }: KernelFeaturesPro
 ));
 KernelFeatures.displayName = 'KernelFeatures';
 
-// Helper function to generate download filename (js-cache-function-results pattern)
-let filenameCache: { timestamp: string; filename: string } | null = null;
-
+// Helper function to generate download filename
 const generateTimestamp = (): string => {
   const now = new Date();
   const year = now.getFullYear();
@@ -109,17 +107,14 @@ export function Converter() {
   const [mode, setMode] = useState<ConversionMode>('proxies-to-yaml');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [kernelType, setKernelType] = useState<KernelType>('clash-meta');
-  const t = useTranslations(); // Must be called at component top level
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const t = useTranslations();
   const pendingInputRef = useRef<string | null>(null);
   const previousFilteredCountRef = useRef<Record<string, number>>({});
   const previousUnsupportedProtocolsRef = useRef<Set<string>>(new Set());
 
   // Parse input based on mode
-  // rerender-dependencies: Remove 't' from deps as it's only used in callbacks
   const result = useMemo(() => {
     if (!input.trim()) {
-      // Reset tracking when input is empty
       previousUnsupportedProtocolsRef.current = new Set();
       previousFilteredCountRef.current = {};
       return '';
@@ -127,25 +122,19 @@ export function Converter() {
 
     if (mode === 'proxies-to-yaml') {
       const { proxies, unsupported } = parseMultipleProxies(input);
-
       let filteredProxies = proxies;
 
-      // Filter protocols for Clash Premium
       if (kernelType === 'clash-premium') {
         const filteredCounts: Record<string, number> = {};
-
         filteredProxies = proxies.filter(proxy => {
-          // js-set-map-lookups: O(1) Set.has() instead of O(n) Array.includes()
           if (CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS.has(proxy.type)) {
             filteredCounts[proxy.type] = (filteredCounts[proxy.type] || 0) + 1;
             return false;
           }
           return true;
         });
-
         return { yaml: generateSimpleYaml(filteredProxies), filteredCounts };
       }
-
       return { yaml: generateSimpleYaml(filteredProxies), filteredCounts: {} };
     } else {
       const proxies = parseYamlToProxies(input);
@@ -153,13 +142,11 @@ export function Converter() {
     }
   }, [input, mode, kernelType]);
 
-  // Extract yaml from result for easier use
   const yaml = typeof result === 'string' ? result : result.yaml;
   const filteredCounts = typeof result === 'string' ? {} : result.filteredCounts;
   const { proxies, unsupported } = useMemo(() => parseMultipleProxies(input), [input]);
 
-  // Handle toasts for unsupported and filtered protocols separately
-  // rerender-dependencies: Stable dependencies array
+  // Handle toasts
   useEffect(() => {
     if (!input.trim()) {
       previousUnsupportedProtocolsRef.current = new Set();
@@ -167,7 +154,6 @@ export function Converter() {
       return;
     }
 
-    // Show toast for unsupported protocols
     const uniqueUnsupported = Array.from(new Set(unsupported));
     uniqueUnsupported.forEach(protocol => {
       if (!previousUnsupportedProtocolsRef.current.has(protocol)) {
@@ -176,7 +162,6 @@ export function Converter() {
     });
     previousUnsupportedProtocolsRef.current = new Set(uniqueUnsupported);
 
-    // Show toast warnings for filtered protocols (only in proxies-to-yaml mode)
     if (mode === 'proxies-to-yaml' && kernelType === 'clash-premium') {
       Object.entries(filteredCounts).forEach(([protocol, count]) => {
         if (previousFilteredCountRef.current[protocol] !== count) {
@@ -197,17 +182,6 @@ export function Converter() {
     }
   }, [mode]);
 
-  // Reset textarea scroll position when mode or input changes
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      if (textareaRef.current) {
-        textareaRef.current.scrollLeft = 0;
-        textareaRef.current.scrollTop = 0;
-      }
-    });
-  }, [mode, input]);
-
-  // rerender-defer-reads: Use stable callback, t is from scope
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(yaml);
@@ -218,21 +192,18 @@ export function Converter() {
     }
   }, [yaml, t]);
 
-  // js-batch-dom-css: Batch DOM operations
   const handleDownload = useCallback(() => {
     const timestamp = generateTimestamp();
     const filename = mode === 'proxies-to-yaml'
       ? `clashconvert-${timestamp}.yaml`
       : `proxies-${timestamp}.txt`;
 
-    // Create download link and trigger download in a single batch
     const blob = new Blob([yaml], { type: mode === 'proxies-to-yaml' ? 'text/yaml' : 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
 
-    // Batch DOM operations
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -247,7 +218,6 @@ export function Converter() {
     setMode(newMode);
   }, [mode, yaml]);
 
-  // rerender-memo: Memoize item count calculation
   const itemCount = useMemo(() => {
     if (mode === 'proxies-to-yaml') {
       return proxies.length;
@@ -255,14 +225,16 @@ export function Converter() {
     return parseYamlToProxies(input).length;
   }, [mode, proxies.length, input]);
 
-  // Pre-compute kernel features props (rendering-hoist-jsx pattern)
   const kernelTitle = t.raw(`kernelDescriptions.${kernelType}.title` as any);
   const kernelDescription = t.raw(`kernelDescriptions.${kernelType}.description` as any);
   const kernelFeatures = t.raw(`kernelDescriptions.${kernelType}.features` as any) as string[];
 
+  // Output language based on mode
+  const outputLanguage = mode === 'proxies-to-yaml' ? 'yaml' : 'plaintext';
+
   return (
       <div className="w-full max-w-6xl mx-auto px-3 py-4 md:p-8 space-y-4 md:space-y-6">
-        {/* Header with title */}
+        {/* Header */}
         <div className="text-center space-y-1 md:space-y-2">
           <Image src="/clash_converter.svg" alt={t('title')} width={240} height={80} className="mx-auto" />
           <p className="text-sm md:text-base text-muted-foreground">
@@ -271,7 +243,7 @@ export function Converter() {
         </div>
 
         <div className="grid gap-4 md:gap-8 md:grid-cols-2 relative">
-          {/* Input Section */}
+          {/* Input Section - Left Side */}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <Card>
               <CardHeader>
@@ -281,44 +253,39 @@ export function Converter() {
                     {t(`inputLabel.${mode}`)}
                   </CardTitle>
                   <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 w-6">
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                       <Info className="w-4 h-4" />
                     </Button>
                   </DialogTrigger>
                 </div>
               </CardHeader>
               <CardContent>
-              <Textarea
-                  ref={textareaRef}
-                  placeholder={t(`inputPlaceholder.${mode}`)}
+                <PreviewEditor
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  className="!h-[300px] md:!h-[400px] resize-none font-mono text-xs md:text-sm overflow-auto whitespace-pre"
-              />
-              <div className="mt-3 md:mt-4 flex items-center justify-between text-xs md:text-sm text-muted-foreground">
-                <span>{t('itemsFound', { count: itemCount })}</span>
-                {input && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setInput('')}
-                        className="text-xs"
-                    >
+                  language="plaintext"
+                  height="300px"
+                  placeholder={t(`inputPlaceholder.${mode}`)}
+                  onChange={(val) => setInput(val)}
+                />
+                <div className="mt-3 md:mt-4 flex items-center justify-between text-xs md:text-sm text-muted-foreground">
+                  <span>{t('itemsFound', { count: itemCount })}</span>
+                  {input && (
+                    <Button variant="ghost" size="sm" onClick={() => setInput('')} className="text-xs">
                       {t('clear')}
                     </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>{t('supportedProtocols')}</DialogTitle>
-              <DialogDescription>
-                All proxy protocols are supported for conversion
-              </DialogDescription>
-            </DialogHeader>
-            <ProtocolCards />
-          </DialogContent>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{t('supportedProtocols')}</DialogTitle>
+                <DialogDescription>
+                  All proxy protocols are supported for conversion
+                </DialogDescription>
+              </DialogHeader>
+              <ProtocolCards />
+            </DialogContent>
           </Dialog>
 
           {/* Swap Button (centered) */}
@@ -334,7 +301,7 @@ export function Converter() {
             </Button>
           </div>
 
-          {/* Output Section */}
+          {/* Output Section - Right Side */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -374,11 +341,12 @@ export function Converter() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="relative">
-                <pre className="h-[300px] md:h-[400px] w-full rounded-md border border-stone-200 bg-stone-50 p-3 md:p-4 text-[10px] md:text-xs font-mono overflow-auto whitespace-pre dark:border-stone-800 dark:bg-stone-950">
-                  {yaml || t(`outputPlaceholder.${mode}`)}
-                </pre>
-              </div>
+              <PreviewEditor
+                value={yaml}
+                language={outputLanguage}
+                height="300px"
+                placeholder={t(`outputPlaceholder.${mode}`)}
+              />
               <div className="mt-3 md:mt-4 flex gap-2">
                 <Button
                     onClick={handleDownload}

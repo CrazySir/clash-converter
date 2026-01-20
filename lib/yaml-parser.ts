@@ -8,6 +8,7 @@ const PROXY_LINK_GENERATORS = new Map<string, (proxy: ProxyNode) => string | nul
   ['trojan', trojanToLink],
   ['vless', vlessToLink],
   ['hysteria', hysteriaToLink],
+  ['hysteria2', hysteriaToLink],
   ['socks5', socks5ToLink],
   ['http', httpToLink],
 ]);

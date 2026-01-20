@@ -57,7 +57,7 @@ export function parseProxyLink(link: string): ParsedProxy | null {
 }
 
 export function parseMultipleProxies(input: string): { proxies: ProxyNode[]; unsupported: string[] } {
-  const lines = input.split(/[\r\n]+/).filter(line => line.trim());
+  const lines = input.split(/[\r\n]+/);
   const proxies: ProxyNode[] = [];
   const unsupported: string[] = [];
 
@@ -70,7 +70,13 @@ export function parseMultipleProxies(input: string): { proxies: ProxyNode[]; uns
   const defaultProtocolNames = new Set(['SS', 'SSR', 'Vmess', 'Trojan', 'Hysteria', 'Hysteria2', 'VLESS', 'HTTP', 'SOCKS5', 'Telegram']);
 
   for (const line of lines) {
-    const result = parseProxyLink(line);
+    const trimmedLine = line.trim();
+
+    // Skip empty lines and comment lines (starting with #)
+    if (!trimmedLine || trimmedLine.startsWith('#')) {
+      continue;
+    }
+    const result = parseProxyLink(trimmedLine);
     if (result) {
       const config = result.config;
       const originalName = config.name;
@@ -102,10 +108,13 @@ export function parseMultipleProxies(input: string): { proxies: ProxyNode[]; uns
       proxies.push(config);
     } else {
       // Check if it looks like a proxy link (has ://) but failed to parse
-      if (line.includes('://')) {
-        const protocol = line.split(':')[0].toLowerCase().trim();
+      if (trimmedLine.includes('://')) {
+        const protocol = trimmedLine.split(':')[0].toLowerCase().trim();
+        // Skip if protocol contains special characters (likely YAML config like "- https")
+        // Valid protocols are alphanumeric only (ss, vmess, etc.)
+        const isValidProtocol = /^[a-z0-9]+$/.test(protocol);
         // js-set-map-lookups: Use Set.has() for O(1) lookup instead of Array.includes()
-        if (protocol && !SUPPORTED_PROTOCOLS.has(protocol)) {
+        if (isValidProtocol && protocol && !SUPPORTED_PROTOCOLS.has(protocol)) {
           unsupported.push(protocol);
         }
       }
