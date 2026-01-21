@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Skill(vercel-react-best-practices)",
+      "Skill(web-design-guidelines)",
       "WebSearch",
       "Bash(tree:*)",
       "Bash(pnpm install)",
@@ -29,8 +31,9 @@
       "Bash(timeout:*)",
       "Bash(npx tsx:*)",
       "Bash(pnpm build:cf:*)",
-      "Skill(vercel-react-best-practices)",
-      "Skill(web-design-guidelines)"
+      "Bash(pnpm build:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm run lint:*)"
     ]
   }
 }

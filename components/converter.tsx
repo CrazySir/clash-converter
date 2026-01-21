@@ -99,7 +99,7 @@ const generateTimestamp = (): string => {
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+  return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
 };
 
 export function Converter() {
@@ -231,6 +231,8 @@ export function Converter() {
 
   // Output language based on mode
   const outputLanguage = mode === 'proxies-to-yaml' ? 'yaml' : 'plaintext';
+  // Input language based on mode (plaintext for proxies, yaml for yaml-to-proxies mode)
+  const inputLanguage = mode === 'proxies-to-yaml' ? 'plaintext' : 'yaml';
 
   return (
       <div className="w-full max-w-6xl mx-auto px-3 py-4 md:p-8 space-y-4 md:space-y-6">
@@ -262,7 +264,7 @@ export function Converter() {
               <CardContent>
                 <PreviewEditor
                   value={input}
-                  language="plaintext"
+                  language={inputLanguage}
                   height="300px"
                   placeholder={t(`inputPlaceholder.${mode}`)}
                   onChange={(val) => setInput(val)}
