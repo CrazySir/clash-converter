@@ -38,7 +38,6 @@ interface PreviewEditorProps {
   height?: string;
   onChange?: (value: string) => void;
   placeholder?: string;
-  key?: string;
   debounceMs?: number;
 }
 
@@ -420,7 +419,6 @@ export function PreviewEditor({
   height = '400px',
   onChange,
   placeholder,
-  key: editorKey,
   debounceMs = 150,
 }: PreviewEditorProps) {
   const { theme, systemTheme } = useTheme();
@@ -554,9 +552,9 @@ export function PreviewEditor({
         viewRef.current = null;
       }
     };
-    // Only re-initialize on mount or editorKey change
+    // Only re-initialize on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, editorKey]);
+  }, [mounted]);
 
   // Combined update effect for language, theme, readOnly, placeholder
   // This reduces multiple dispatch calls into a single batch

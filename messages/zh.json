@@ -26,7 +26,8 @@
   "kernelType": "内核类型",
   "kernelTypes": {
     "clash-meta": "Clash Meta (Mihomo)",
-    "clash-premium": "Clash Premium"
+    "clash-premium": "Clash Premium",
+    "sing-box": "Sing-Box"
   },
   "kernelDescriptions": {
     "clash-meta": {
@@ -47,6 +48,16 @@
         "稳定但已过时，最后更新于 2023 年",
         "为旧配置提供遗留支持",
         "仅在客户端要求时选择"
+      ]
+    },
+    "sing-box": {
+      "title": "Sing-Box",
+      "description": "通用代理平台，支持多种协议和平台。",
+      "features": [
+        "支持 SS、VMess、VLESS、Trojan、Hysteria、Hysteria2、HTTP、SOCKS5",
+        "不支持 ShadowsocksR (SSR)",
+        "支持 Android、iOS、Windows、macOS、Linux 客户端",
+        "JSON 格式配置"
       ]
     }
   },
@@ -138,7 +149,8 @@
         { "q": "如何将代理链接转换为 Clash 格式？", "a": "只需将您的代理链接（每行一个）粘贴到输入框中。每个链接应采用 ss://base64#name、vmess://base64#name 等格式。点击「转换」按钮，Clash YAML 配置将立即生成。" },
         { "q": "我可以将 Clash YAML 转换回代理链接吗？", "a": "可以！点击「切换方向」按钮，从「代理转 YAML」模式切换到「YAML 转代理」模式。粘贴您的 Clash YAML 配置，工具将提取所有代理节点并转换回可分享的链接。" },
         { "q": "为什么应该使用这个 Clash 转换器？", "a": "我们的 Clash 转换器提供最全面的协议支持，完全在浏览器中工作以保护隐私，没有限制或注册要求，并定期更新以支持最新的代理协议。" },
-        { "q": "这适用于 Clash Verge 和其他客户端吗？", "a": "是的！YAML 输出与所有基于 Clash 的客户端兼容，包括 Clash Verge、Clash Nyanpasu、Clash for Android、Clash for Windows 以及其他使用 Clash Meta (Mihomo) 或 Clash Premium 内核的客户端。" }
+        { "q": "这适用于 Clash Verge 和其他客户端吗？", "a": "是的！YAML 输出与所有基于 Clash 的客户端兼容，包括 Clash Verge、Clash Nyanpasu、Clash for Android、Clash for Windows 以及其他使用 Clash Meta (Mihomo) 或 Clash Premium 内核的客户端。" },
+        { "q": "为什么无法在 ShadowRocket 中探测 Hy2 节点的延迟", "a": "请在 App 中修改配置: 设置 – 延迟测试方法 - CONNNECT" }
       ]
     },
     "cta": {

@@ -28,12 +28,14 @@ import { PreviewEditor } from '@/components/preview-editor';
 import { parseMultipleProxies } from '@/lib/parsers';
 import { parseYamlToProxies, proxiesToLinks } from '@/lib/yaml-parser';
 import { generateSimpleYaml } from '@/lib/yaml-generator';
+import { generateSingBoxConfig, SING_BOX_SUPPORTED_PROTOCOLS } from '@/lib/sing-box-generator';
+import type { OutputFormat } from '@/lib/types';
 import { Download, FileText, Copy, ArrowRightLeft, Info, Cpu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 type ConversionMode = 'proxies-to-yaml' | 'yaml-to-proxies';
-type KernelType = 'clash-meta' | 'clash-premium';
+type OutputFormatType = 'clash-meta' | 'clash-premium' | 'sing-box';
 
 // js-set-map-lookups: Use Set for O(1) lookups instead of Array.includes()
 const CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS = new Set(['vless', 'hysteria', 'hysteria2']);
@@ -66,7 +68,7 @@ ProtocolCards.displayName = 'ProtocolCards';
 
 // rerender-memo: Memoize kernel features component to prevent unnecessary re-renders
 interface KernelFeaturesProps {
-  kernelType: KernelType;
+  kernelType: OutputFormatType;
   features: string[];
   title: string;
   description: string;
@@ -106,7 +108,7 @@ export function Converter() {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<ConversionMode>('proxies-to-yaml');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [kernelType, setKernelType] = useState<KernelType>('clash-meta');
+  const [outputFormat, setOutputFormat] = useState<OutputFormatType>('clash-meta');
   const t = useTranslations();
   const pendingInputRef = useRef<string | null>(null);
   const previousFilteredCountRef = useRef<Record<string, number>>({});
@@ -123,9 +125,9 @@ export function Converter() {
     if (mode === 'proxies-to-yaml') {
       const { proxies, unsupported } = parseMultipleProxies(input);
       let filteredProxies = proxies;
+      let filteredCounts: Record<string, number> = {};
 
-      if (kernelType === 'clash-premium') {
-        const filteredCounts: Record<string, number> = {};
+      if (outputFormat === 'clash-premium') {
         filteredProxies = proxies.filter(proxy => {
           if (CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS.has(proxy.type)) {
             filteredCounts[proxy.type] = (filteredCounts[proxy.type] || 0) + 1;
@@ -133,17 +135,32 @@ export function Converter() {
           }
           return true;
         });
-        return { yaml: generateSimpleYaml(filteredProxies), filteredCounts };
+        return { output: generateSimpleYaml(filteredProxies), filteredCounts, isJson: false };
       }
-      return { yaml: generateSimpleYaml(filteredProxies), filteredCounts: {} };
+
+      if (outputFormat === 'sing-box') {
+        // sing-box doesn't support SSR
+        filteredProxies = proxies.filter(proxy => {
+          if (!SING_BOX_SUPPORTED_PROTOCOLS.has(proxy.type)) {
+            filteredCounts[proxy.type] = (filteredCounts[proxy.type] || 0) + 1;
+            return false;
+          }
+          return true;
+        });
+        return { output: generateSingBoxConfig(filteredProxies), filteredCounts, isJson: true };
+      }
+
+      // clash-meta (default) - supports all protocols
+      return { output: generateSimpleYaml(filteredProxies), filteredCounts: {}, isJson: false };
     } else {
       const proxies = parseYamlToProxies(input);
-      return { yaml: proxiesToLinks(proxies).join('\n'), filteredCounts: {} };
+      return { output: proxiesToLinks(proxies).join('\n'), filteredCounts: {}, isJson: false };
     }
-  }, [input, mode, kernelType]);
+  }, [input, mode, outputFormat]);
 
-  const yaml = typeof result === 'string' ? result : result.yaml;
+  const output = typeof result === 'string' ? result : result.output;
   const filteredCounts = typeof result === 'string' ? {} : result.filteredCounts;
+  const isJson = typeof result === 'string' ? false : result.isJson ?? false;
   const { proxies, unsupported } = useMemo(() => parseMultipleProxies(input), [input]);
 
   // Handle toasts
@@ -162,17 +179,24 @@ export function Converter() {
     });
     previousUnsupportedProtocolsRef.current = new Set(uniqueUnsupported);
 
-    if (mode === 'proxies-to-yaml' && kernelType === 'clash-premium') {
+    if (mode === 'proxies-to-yaml' && outputFormat === 'clash-premium') {
       Object.entries(filteredCounts).forEach(([protocol, count]) => {
         if (previousFilteredCountRef.current[protocol] !== count) {
           toast.warning(`${count} ${protocol.toUpperCase()} node(s) filtered out`);
         }
       });
       previousFilteredCountRef.current = filteredCounts;
-    } else if (kernelType === 'clash-meta') {
+    } else if (mode === 'proxies-to-yaml' && outputFormat === 'sing-box') {
+      Object.entries(filteredCounts).forEach(([protocol, count]) => {
+        if (previousFilteredCountRef.current[protocol] !== count) {
+          toast.warning(`${count} ${protocol.toUpperCase()} node(s) filtered out (not supported by sing-box)`);
+        }
+      });
+      previousFilteredCountRef.current = filteredCounts;
+    } else if (outputFormat === 'clash-meta') {
       previousFilteredCountRef.current = {};
     }
-  }, [input, unsupported, filteredCounts, mode, kernelType]);
+  }, [input, unsupported, filteredCounts, mode, outputFormat]);
 
   // Handle pending input after mode change
   useEffect(() => {
@@ -184,21 +208,33 @@ export function Converter() {
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(yaml);
+      await navigator.clipboard.writeText(output);
       toast.success(t('copied'));
     } catch (err) {
       console.error('Failed to copy:', err);
       toast.error('Failed to copy');
     }
-  }, [yaml, t]);
+  }, [output, t]);
 
   const handleDownload = useCallback(() => {
     const timestamp = generateTimestamp();
-    const filename = mode === 'proxies-to-yaml'
-      ? `clashconvert-${timestamp}.yaml`
-      : `proxies-${timestamp}.txt`;
+    let filename: string;
+    let mimeType: string;
 
-    const blob = new Blob([yaml], { type: mode === 'proxies-to-yaml' ? 'text/yaml' : 'text/plain' });
+    if (mode === 'proxies-to-yaml') {
+      if (outputFormat === 'sing-box') {
+        filename = `sing-box-${timestamp}.json`;
+        mimeType = 'application/json';
+      } else {
+        filename = `clashconvert-${timestamp}.yaml`;
+        mimeType = 'text/yaml';
+      }
+    } else {
+      filename = `proxies-${timestamp}.txt`;
+      mimeType = 'text/plain';
+    }
+
+    const blob = new Blob([output], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -210,13 +246,13 @@ export function Converter() {
     URL.revokeObjectURL(url);
 
     toast.success('Downloaded successfully');
-  }, [yaml, mode]);
+  }, [output, mode, outputFormat]);
 
   const handleSwapMode = useCallback(() => {
     const newMode = mode === 'proxies-to-yaml' ? 'yaml-to-proxies' : 'proxies-to-yaml';
-    pendingInputRef.current = yaml;
+    pendingInputRef.current = output;
     setMode(newMode);
-  }, [mode, yaml]);
+  }, [mode, output]);
 
   const itemCount = useMemo(() => {
     if (mode === 'proxies-to-yaml') {
@@ -225,12 +261,12 @@ export function Converter() {
     return parseYamlToProxies(input).length;
   }, [mode, proxies.length, input]);
 
-  const kernelTitle = t.raw(`kernelDescriptions.${kernelType}.title` as any);
-  const kernelDescription = t.raw(`kernelDescriptions.${kernelType}.description` as any);
-  const kernelFeatures = t.raw(`kernelDescriptions.${kernelType}.features` as any) as string[];
+  const kernelTitle = t.raw(`kernelDescriptions.${outputFormat}.title` as any);
+  const kernelDescription = t.raw(`kernelDescriptions.${outputFormat}.description` as any);
+  const kernelFeatures = t.raw(`kernelDescriptions.${outputFormat}.features` as any) as string[];
 
   // Output language based on mode
-  const outputLanguage = mode === 'proxies-to-yaml' ? 'yaml' : 'plaintext';
+  const outputLanguage = mode === 'proxies-to-yaml' ? (isJson ? 'json' : 'yaml') : 'plaintext';
   // Input language based on mode (plaintext for proxies, yaml for yaml-to-proxies mode)
   const inputLanguage = mode === 'proxies-to-yaml' ? 'plaintext' : 'yaml';
 
@@ -314,13 +350,14 @@ export function Converter() {
                 {mode === 'proxies-to-yaml' && (
                     <div className="flex items-center gap-2">
                       <Cpu className="w-4 h-4 text-muted-foreground" />
-                      <Select value={kernelType} onValueChange={(value) => setKernelType(value as KernelType)}>
+                      <Select value={outputFormat} onValueChange={(value) => setOutputFormat(value as OutputFormatType)}>
                         <SelectTrigger className="w-[180px] h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="clash-meta">{t('kernelTypes.clash-meta')}</SelectItem>
                           <SelectItem value="clash-premium">{t('kernelTypes.clash-premium')}</SelectItem>
+                          <SelectItem value="sing-box">{t('kernelTypes.sing-box')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <HoverCard openDelay={200}>
@@ -331,7 +368,7 @@ export function Converter() {
                         </HoverCardTrigger>
                         <HoverCardContent className="w-80">
                           <KernelFeatures
-                            kernelType={kernelType}
+                            kernelType={outputFormat}
                             title={kernelTitle}
                             description={kernelDescription}
                             features={kernelFeatures}
@@ -344,7 +381,8 @@ export function Converter() {
             </CardHeader>
             <CardContent>
               <PreviewEditor
-                value={yaml}
+                key={mode === 'proxies-to-yaml' ? outputFormat : 'yaml-to-proxies'}
+                value={output}
                 language={outputLanguage}
                 height="300px"
                 placeholder={t(`outputPlaceholder.${mode}`)}
@@ -375,7 +413,7 @@ export function Converter() {
                     variant="outline"
                     className="w-full"
                     onClick={handleSwapMode}
-                    disabled={!input || !yaml}
+                    disabled={!input || !output}
                     size="sm"
                 >
                   <ArrowRightLeft className="w-4 h-4 mr-2" />

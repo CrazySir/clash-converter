@@ -16,3 +16,6 @@ export interface ParsedProxy {
   name: string;
   config: ProxyNode;
 }
+
+// Output format types
+export type OutputFormat = 'clash-meta' | 'clash-premium' | 'sing-box';

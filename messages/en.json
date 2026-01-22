@@ -26,7 +26,8 @@
   "kernelType": "Kernel Type",
   "kernelTypes": {
     "clash-meta": "Clash Meta (Mihomo)",
-    "clash-premium": "Clash Premium"
+    "clash-premium": "Clash Premium",
+    "sing-box": "Sing-Box"
   },
   "kernelDescriptions": {
     "clash-meta": {
@@ -47,6 +48,16 @@
         "Stable but outdated, last updated in 2023",
         "Legacy support for older configurations",
         "Only choose if your client requires it"
+      ]
+    },
+    "sing-box": {
+      "title": "Sing-Box",
+      "description": "A universal proxy platform with support for multiple protocols and platforms.",
+      "features": [
+        "Supports SS, VMess, VLESS, Trojan, Hysteria, Hysteria2, HTTP, SOCKS5",
+        "Does NOT support ShadowsocksR (SSR)",
+        "Used by Android, iOS, Windows, macOS, Linux clients",
+        "JSON format configuration"
       ]
     }
   },
@@ -138,7 +149,8 @@
         { "q": "How do I convert proxy links to Clash format?", "a": "Simply paste your proxy links (one per line) into the input box. Each link should be in the format like ss://base64#name, vmess://base64#name, etc. Click \"Convert\" and the Clash YAML configuration will be generated instantly." },
         { "q": "Can I convert Clash YAML back to proxy links?", "a": "Yes! Click the \"Swap Direction\" button to switch from \"Proxies to YAML\" mode to \"YAML to Proxies\" mode. Paste your Clash YAML config and the tool will extract and convert all proxy nodes back to shareable links." },
         { "q": "Why should I use this clash converter?", "a": "Our clash converter offers the most comprehensive protocol support, works entirely in your browser for privacy, has no limitations or registration requirements, and is regularly updated to support the latest proxy protocols." },
-        { "q": "Does this work with Clash Verge and other clients?", "a": "Yes! The YAML output is compatible with all Clash-based clients including Clash Verge, Clash Nyanpasu, Clash for Android, Clash for Windows, and other clients that use Clash Meta (Mihomo) or Clash Premium kernels." }
+        { "q": "Does this work with Clash Verge and other clients?", "a": "Yes! The YAML output is compatible with all Clash-based clients including Clash Verge, Clash Nyanpasu, Clash for Android, Clash for Windows, and other clients that use Clash Meta (Mihomo) or Clash Premium kernels." },
+        { "q": "Why can't I detect latency in Hy2 nodes in ShadowRocket?", "a": "Please modify the configuration in the app: Settings – Test Method – CONNNECT" }
       ]
     },
     "cta": {
