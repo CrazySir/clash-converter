@@ -1,4 +1,4 @@
-import { ProxyNode } from './types';
+import { ProxyNode } from '../../types';
 
 // js-index-maps: Use Map for O(1) lookups instead of switch statement
 const PROXY_LINK_GENERATORS = new Map<string, (proxy: ProxyNode) => string | null>([

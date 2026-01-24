@@ -1,36 +1,19 @@
-import { ProxyNode } from '../types';
-import { parseMultipleProxies } from '../parsers';
-import { parseYamlToProxies } from '../clash/parser/yaml';
-import { parseSingBoxToProxies } from '../singbox/parser';
-
 /**
- * Format type for input/output
+ * Backward compatibility module
+ * Re-exports from the new core system for backward compatibility
  */
-export type FormatType = 'txt' | 'clash-meta' | 'clash-premium' | 'sing-box';
 
-/**
- * Parse input based on the specified format
- * @param input - The input string to parse
- * @param format - The format type (txt, clash-meta, clash-premium, sing-box)
- * @returns Object containing proxies array, unsupported protocols, and filtered counts
- */
-export function parseInput(input: string, format: FormatType): {
-  proxies: ProxyNode[];
-  unsupported: string[];
-  filteredCounts: Record<string, number>;
-} {
-  switch (format) {
-    case 'txt':
-      const result = parseMultipleProxies(input);
-      return { ...result, filteredCounts: {} };
-    case 'clash-meta':
-    case 'clash-premium':
-      // Both clash-meta and clash-premium use YAML format
-      const proxies = parseYamlToProxies(input);
-      return { proxies, unsupported: [], filteredCounts: {} };
-    case 'sing-box':
-      return parseSingBoxToProxies(input);
-    default:
-      return { proxies: [], unsupported: [], filteredCounts: {} };
-  }
-}
+// Re-export types and functions from the new core system
+export type {
+  FormatType,
+  ParseResult,
+  ConversionResult,
+} from '../core/interfaces';
+
+export {
+  parseInput,
+  convert,
+} from '../core';
+
+// Re-export ProxyNode type for convenience
+export type { ProxyNode } from '../types';

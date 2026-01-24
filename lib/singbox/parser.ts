@@ -1,4 +1,4 @@
-import { ProxyNode } from './types';
+import { ProxyNode } from '../types';
 
 // js-set-map-lookups: Use Set for O(1) lookups instead of Array.includes()
 const NON_PROXY_OUTBOUND_TYPES = new Set(['selector', 'urltest', 'direct', 'block', 'dns']);

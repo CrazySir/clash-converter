@@ -25,16 +25,10 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { PreviewEditor } from '@/components/preview/preview-editor';
-import { parseInput, FormatType } from '@/lib/parser';
-import { proxiesToLinks } from '@/lib/clash/parser/yaml';
-import { generateSimpleYaml } from '@/lib/clash/generator/yaml';
-import { generateSingBoxConfig, SING_BOX_SUPPORTED_PROTOCOLS } from '@/lib/singbox/generator';
+import { parseInput, convert, FormatType } from '@/lib/parser';
 import { Download, FileText, Copy, ArrowRightLeft, Info, Cpu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-
-// js-set-map-lookups: Use Set for O(1) lookups instead of Array.includes()
-const CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS = new Set(['vless', 'hysteria', 'hysteria2']);
 
 // rendering-hoist-jsx: Hoist static protocol cards outside component to avoid recreation
 const PROTOCOL_CARDS = [
@@ -118,49 +112,8 @@ export function Converter() {
       return { output: '', filteredCounts: {}, isJson: false, unsupported: [] };
     }
 
-    // Parse input based on inputFormat
-    const parseResult = parseInput(input, inputFormat);
-    let { proxies, unsupported } = parseResult;
-    let filteredCounts: Record<string, number> = {};
-    let isJson = false;
-
-    // Apply protocol filtering based on outputFormat
-    if (outputFormat === 'clash-premium') {
-      proxies = proxies.filter(p => {
-        if (CLASH_PREMIUM_UNSUPPORTED_PROTOCOLS.has(p.type)) {
-          filteredCounts[p.type] = (filteredCounts[p.type] || 0) + 1;
-          return false;
-        }
-        return true;
-      });
-    } else if (outputFormat === 'sing-box') {
-      proxies = proxies.filter(p => {
-        if (!SING_BOX_SUPPORTED_PROTOCOLS.has(p.type)) {
-          filteredCounts[p.type] = (filteredCounts[p.type] || 0) + 1;
-          return false;
-        }
-        return true;
-      });
-    }
-
-    // Generate output based on outputFormat
-    let output = '';
-    switch (outputFormat) {
-      case 'txt':
-        output = proxiesToLinks(proxies).join('\n');
-        break;
-      case 'clash-meta':
-      case 'clash-premium':
-        output = generateSimpleYaml(proxies);
-        isJson = false;
-        break;
-      case 'sing-box':
-        output = generateSingBoxConfig(proxies);
-        isJson = true;
-        break;
-    }
-
-    return { output, filteredCounts, isJson, unsupported };
+    // Use the new convert function for unified conversion
+    return convert(input, inputFormat, outputFormat);
   }, [input, inputFormat, outputFormat]);
 
   const output = result.output;

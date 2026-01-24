@@ -1,4 +1,4 @@
-import { ProxyNode } from './types';
+import { ProxyNode } from '../types';
 
 // Protocols supported by sing-box (SSR and SOCKS5 are NOT supported)
 export const SING_BOX_SUPPORTED_PROTOCOLS = new Set([

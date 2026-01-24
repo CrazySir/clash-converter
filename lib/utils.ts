@@ -39,6 +39,16 @@ export function parseUrlParams(url: string): Record<string, string> {
   return params;
 }
 
+// Base64 encode with proper UTF-8 handling
+export function base64Encode(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
 // Safe JSON parse
 export function safeJsonParse<T>(str: string, defaultValue: T): T {
   try {
