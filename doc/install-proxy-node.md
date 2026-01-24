@@ -1,4 +1,4 @@
-# Proxy Install Script
+# Proxy Node Installation
 
 https://github.com/yeahwu/v2ray-wss
 https://github.com/233boy/v2ray

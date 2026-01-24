@@ -1,6 +1,51 @@
 {
   "title": "Clash Converter",
-  "subtitle": "Convert between proxy links, Clash YAML, and sing-box JSON formats",
+  "subtitle": "Convert between Proxy Links, Clash YAML, and Sing-Box JSON",
+  "about": "About",
+  "backToHome": "Back to Home",
+  "resources": {
+    "menuTitle": "Resources",
+    "title": "Resources & Downloads",
+    "subtitle": "Download proxy clients and installation scripts to set up your proxy system",
+    "clients": {
+      "title": "Proxy Clients Installation",
+      "description": "Choose a client that matches your platform and needs"
+    },
+    "scripts": {
+      "title": "Proxy Node Installation",
+      "description": "One-click scripts to deploy your proxy server",
+      "noticeTitle": "Important Notice"
+    },
+    "cta": {
+      "title": "Ready to Convert?",
+      "description": "Convert your proxy links to Clash or sing-box format now",
+      "button": "Start Converting"
+    },
+    "detectors": {
+      "title": "Connectivity Detection Tools",
+      "description": "Check if your IP or port is blocked by the firewall",
+      "visitButton": "Visit Tool",
+      "infoTitle": "What are these tools?",
+      "info": "Use these online tools to detect whether an IP address or port is blocked by GFW (Great Firewall of China). This helps you verify the connectivity of your proxy server before deploying.",
+      "tools": [
+        {
+          "name": "TCP Ping",
+          "desc": "Check if IP:Port is blocked by GFW with TCP connectivity test",
+          "url": "https://tcp.ping.pe/"
+        },
+        {
+          "name": "Port Ping",
+          "desc": "Check if a specific port is blocked by firewall",
+          "url": "https://port.ping.pe/"
+        },
+        {
+          "name": "Chinaz Ping",
+          "desc": "Check if IP or port is reachable from China",
+          "url": "https://ping.chinaz.com/"
+        }
+      ]
+    }
+  },
   "clientDialog": {
     "buttonLabel": "Install Client",
     "title": "Install Proxy Client",

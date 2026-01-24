@@ -1,6 +1,51 @@
 {
   "title": "Clash 转换器",
-  "subtitle": "在代理链接、Clash YAML 和 Sing-Box JSON 格式之间转换",
+  "subtitle": "在代理链接、Clash YAML 和 Sing-Box 格式之间转换",
+  "about": "关于",
+  "backToHome": "返回首页",
+  "resources": {
+    "menuTitle": "资源",
+    "title": "资源与下载",
+    "subtitle": "下载代理客户端和安装脚本，快速搭建您的代理系统",
+    "clients": {
+      "title": "代理客户端下载",
+      "description": "选择适合您平台和需求的客户端"
+    },
+    "scripts": {
+      "title": "代理节点安装",
+      "description": "一键脚本快速部署代理服务器",
+      "noticeTitle": "重要提示"
+    },
+    "cta": {
+      "title": "准备开始转换？",
+      "description": "立即将您的代理链接转换为 Clash 或 Sing-Box 格式",
+      "button": "开始转换"
+    },
+    "detectors": {
+      "title": "连通性检测工具",
+      "description": "检查您的 IP 或端口是否被防火墙拦截",
+      "visitButton": "访问工具",
+      "infoTitle": "这些工具是什么？",
+      "info": "使用这些在线工具检测 IP 地址或端口是否被 GFW（防火长城）拦截。在部署代理服务器之前，这可以帮助您验证服务器的连通性。",
+      "tools": [
+        {
+          "name": "TCP Ping",
+          "desc": "检测 IP:Port 是否被 GFW 拦截，通过 TCP 连接测试",
+          "url": "https://tcp.ping.pe/"
+        },
+        {
+          "name": "Port Ping",
+          "desc": "检测特定端口是否被 GFW 拦截",
+          "url": "https://port.ping.pe/"
+        },
+        {
+          "name": "站长之家 Ping",
+          "desc": "检测 IP 或端口在中国大陆是否可达",
+          "url": "https://ping.chinaz.com/"
+        }
+      ]
+    }
+  },
   "clientDialog": {
     "buttonLabel": "安装客户端",
     "title": "安装代理客户端",
