@@ -49,10 +49,15 @@ function setProxyGroups(lines: string[], proxyNames: string[]): void {
   }
 }
 
-// Generate DNS configuration
+// Generate DNS configuration (controlled by environment variable)
 function setDnsConfig(lines: string[]): void {
-  lines.push('');
-  lines.push(...DNS_CONFIG);
+  // Check if DNS config is enabled via environment variable
+  const enabled = process.env.NEXT_PUBLIC_ENABLE_DNS_CONFIG !== 'false';
+
+  if (enabled) {
+    lines.push('');
+    lines.push(...DNS_CONFIG);
+  }
 }
 
 // Generate basic configuration
