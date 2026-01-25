@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2025-01-25
 
 ### Added
 - Footer component with copyright and contact email
@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Environment variable control for DNS configuration in Clash YAML output
 - About page with project information
 - Resources page with proxy client downloads and installation scripts
-- Sing-Box JSON format support (input and output)
+- Sing-Box format support (input and output)
+- MIT License for open-source distribution
+- CHANGELOG.md for version tracking
 
 ### Enhanced
 - **SEO Optimization**
@@ -35,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Component directory organization with semantic structure
 - Library directory organization with clear separation of concerns
 - Improved code maintainability and extensibility
+
+### Updated
+- Favicon assets with multiple sizes for better browser support
+- Translation text refinements for better clarity
 
 ## [0.1.0] - 2024-12-XX
 
