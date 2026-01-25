@@ -3,51 +3,58 @@ import { seoConfig } from '@/lib/seo';
 
 /**
  * Dynamic sitemap.xml generation
- * Includes all localized pages and proper SEO metadata
+ * Includes all localized pages with proper hreflang support
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = seoConfig.siteUrl;
   const currentDate = new Date();
-  const lastModified = new Date('2025-01-01'); // Last significant content update
+  const lastModified = new Date('2025-01-01');
 
-  // Define all supported locales
-  const locales = [
+  // Define all pages with their SEO metadata
+  const pages = [
     {
-      code: 'en',
       path: '',
-      priority: 1,
-      changeFrequency: 'daily' as const
+      priority: 1.0,
+      changeFrequency: 'daily' as const,
+      lastModified
     },
     {
-      code: 'zh',
-      path: '/zh',
-      priority: 0.9,
-      changeFrequency: 'daily' as const
+      path: '/about',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      lastModified
+    },
+    {
+      path: '/resources',
+      priority: 0.8,
+      changeFrequency: 'weekly' as const,
+      lastModified: currentDate
     }
   ];
 
-  // Generate sitemap entries for each locale
-  const localeEntries: MetadataRoute.Sitemap = locales.map((locale) => ({
-    url: `${baseUrl}${locale.path}`,
-    lastModifiedDate: lastModified,
-    changeFrequency: locale.changeFrequency,
-    priority: locale.priority,
-    alternates: {
-      languages: Object.fromEntries(
-        locales.map((l) => [l.code, `${baseUrl}${l.path}`])
-      ),
-    },
-  }));
+  // Generate sitemap entries for each page
+  // Each page has both English and Chinese versions as separate URL entries
+  const entries: MetadataRoute.Sitemap = [];
 
-  return [
-    ...localeEntries,
-    // Add any additional pages here as needed
-    // Example:
-    // {
-    //   url: `${baseUrl}/about`,
-    //   lastModifiedDate: currentDate,
-    //   changeFrequency: 'monthly',
-    //   priority: 0.8,
-    // },
-  ];
+  for (const page of pages) {
+    // English version
+    const enUrl = `${baseUrl}${page.path}`;
+    entries.push({
+      url: enUrl,
+      lastModified: page.lastModified,
+      changeFrequency: page.changeFrequency,
+      priority: page.priority
+    });
+
+    // Chinese version
+    const zhUrl = `${baseUrl}/zh${page.path}`;
+    entries.push({
+      url: zhUrl,
+      lastModified: page.lastModified,
+      changeFrequency: page.changeFrequency,
+      priority: page.priority * 0.9
+    });
+  }
+
+  return entries;
 }

@@ -4,7 +4,19 @@
  */
 
 import { Metadata } from 'next';
-import { seoConfig, getLocalizedMetadata, generateSoftwareApplicationSchema, generateFAQSchema, generateBreadcrumbSchema, generateOrganizationSchema, generateWebSiteSchema } from '@/lib/seo';
+import {
+  seoConfig,
+  getLocalizedMetadata,
+  generateSoftwareApplicationSchema,
+  generateFAQSchema,
+  generateBreadcrumbSchema,
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+  generateHowToSchema,
+  generateAggregateRatingSchema,
+  generateProfilePageSchema,
+  generateCollectionPageSchema
+} from '@/lib/seo';
 
 export interface SEOHeadProps {
   locale: string;
@@ -28,7 +40,6 @@ export function generateMetadata({
 }: SEOHeadProps): Metadata {
   const baseUrl = seoConfig.siteUrl;
   const localizedMetadata = getLocalizedMetadata(locale);
-  const localizedPath = locale === 'en' ? '' : `/${locale}`;
   const canonicalUrl = canonical || localizedMetadata.canonical;
   const ogImage = image ? `${baseUrl}${image}` : `${baseUrl}${seoConfig.ogImage}`;
 
@@ -120,23 +131,42 @@ export function generateMetadata({
  */
 export function JSONLDStructuredData({
   locale,
-  type = 'all'
+  type = 'all',
+  pageType = 'home',
+  customBreadcrumbs
 }: {
   locale: string;
-  type?: 'all' | 'software' | 'faq' | 'breadcrumb' | 'organization' | 'website';
+  type?: 'all' | 'software' | 'faq' | 'breadcrumb' | 'organization' | 'website' | 'howto' | 'rating' | 'profile' | 'collection';
+  pageType?: 'home' | 'about' | 'resources';
+  customBreadcrumbs?: Array<{ name: string; url: string }>;
 }) {
+  const breadcrumbs = customBreadcrumbs || [
+    { name: 'Home', url: seoConfig.siteUrl },
+    { name: pageType === 'about' ? 'About' : pageType === 'resources' ? 'Resources' : 'Clash Converter', url: `${seoConfig.siteUrl}${locale === 'en' ? '' : `/${locale}`}${pageType === 'home' ? '' : `/${pageType}`}` }
+  ];
+
   const schemas: Record<string, Record<string, unknown>> = {
     software: generateSoftwareApplicationSchema(locale),
     faq: generateFAQSchema(locale),
-    breadcrumb: generateBreadcrumbSchema([
-      { name: 'Home', url: seoConfig.siteUrl },
-      { name: 'Clash Converter', url: `${seoConfig.siteUrl}${locale === 'en' ? '' : `/${locale}`}` }
-    ]),
+    breadcrumb: generateBreadcrumbSchema(breadcrumbs),
     organization: generateOrganizationSchema(),
-    website: generateWebSiteSchema()
+    website: generateWebSiteSchema(),
+    howto: generateHowToSchema(locale),
+    rating: generateAggregateRatingSchema(),
+    profile: generateProfilePageSchema(locale),
+    collection: generateCollectionPageSchema(locale)
   };
 
-  const schemasToInclude = type === 'all' ? Object.keys(schemas) : [type];
+  // Select schemas based on page type
+  const schemasByPage: Record<string, string[]> = {
+    home: ['software', 'faq', 'organization', 'website', 'howto', 'rating'],
+    about: ['profile', 'organization', 'breadcrumb'],
+    resources: ['collection', 'breadcrumb']
+  };
+
+  const schemasToInclude = type === 'all'
+    ? (schemasByPage[pageType] || Object.keys(schemas))
+    : [type];
 
   return (
     <>
@@ -200,29 +230,6 @@ export function PerformancePreconnects() {
           rel="preconnect"
           href={domain}
           crossOrigin="anonymous"
-        />
-      ))}
-    </>
-  );
-}
-
-/**
- * DNS Prefetch for performance
- */
-export function DNSPrefetch() {
-  const domains = [
-    'www.google-analytics.com',
-    'pagead2.googlesyndication.com',
-    'www.googletagmanager.com'
-  ];
-
-  return (
-    <>
-      {domains.map((domain) => (
-        <link
-          key={domain}
-          rel="dns-prefetch"
-          href={`https://${domain}`}
         />
       ))}
     </>
