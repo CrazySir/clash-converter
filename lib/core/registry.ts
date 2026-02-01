@@ -15,6 +15,7 @@ import { TxtGenerator } from '../generators/txt-generator';
 import { ClashYamlGenerator } from '../generators/clash-yaml-generator';
 import { ClashPremiumGenerator } from '../generators/clash-premium-generator';
 import { SingBoxJsonGenerator } from '../generators/singbox-json-generator';
+import { LoonGenerator } from '../loon/loon-generator';
 
 /**
  * Initialize the format registry with all parsers and generators
@@ -31,6 +32,7 @@ export function initializeFormatRegistry(): void {
   FormatFactory.registerGenerator(new ClashYamlGenerator());
   FormatFactory.registerGenerator(new ClashPremiumGenerator());
   FormatFactory.registerGenerator(new SingBoxJsonGenerator());
+  FormatFactory.registerGenerator(new LoonGenerator());
 }
 
 /**
