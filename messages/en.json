@@ -9,7 +9,7 @@
   "resources": {
     "menuTitle": "Resources",
     "title": "Resources & Downloads",
-    "subtitle": "Download proxy clients and installation scripts to set up your proxy system",
+    "subtitle": "Download proxy clients and installation scripts. Supports Clash, Sing-Box, Loon, and other popular proxy clients.",
     "clients": {
       "title": "Proxy Clients Installation",
       "description": "Choose a client that matches your platform and needs"
@@ -65,6 +65,11 @@
         "description": "Feature-rich Clash client based on Tauri. Supports Windows, macOS, and Linux.",
         "url": "https://github.com/clash-verge-rev/releases"
       },
+      "loon": {
+        "name": "Loon",
+        "description": "Powerful iOS proxy client with advanced features. Supports SS, SSR, VMess, and Trojan protocols with rich rule customization.",
+        "url": "https://apps.apple.com/app/loon-for-ipad/id370650648"
+      },
       "sing-box": {
         "name": "Sing-Box",
         "description": "Universal proxy platform. Supports Android, iOS, Windows, macOS, and Linux.",
@@ -113,11 +118,48 @@
   },
   "inputLabel": "Input",
   "outputLabel": "Output",
+  "filter": {
+    "title": "Node Filter",
+    "settings": "Filter Settings",
+    "includeLabel": "Include",
+    "includePlaceholder": "e.g., HK|Taiwan|Japan",
+    "includeHint": "Nodes containing this pattern will be kept (regex supported)",
+    "excludeLabel": "Exclude",
+    "excludePlaceholder": "e.g., AD|Expired|Maintenance",
+    "excludeHint": "Nodes containing this pattern will be removed (regex supported)",
+    "filterTimeLabel": "Filter Time",
+    "filterTimeHint": "Choose when to apply the filter rules",
+    "filterTime": {
+      "both": "Filter at both parse and generate time",
+      "parse": "Filter only at parse time",
+      "generate": "Filter only at generate time"
+    },
+    "apply": "Apply",
+    "clear": "Clear",
+    "applied": "Filter rules applied",
+    "invalidRegex": "Invalid regular expression",
+    "invalidInclude": "Include pattern is invalid",
+    "invalidExclude": "Exclude pattern is invalid",
+    "stats": "Original: {original} → Filtered: {filtered} (Removed: {removed})"
+  },
+  "preset": {
+    "title": "Config Presets",
+    "select": "Select Preset",
+    "builtin": "Built-in",
+    "acl4ssr": "ACL4SSR",
+    "universal": "Universal",
+    "special": "Special",
+    "custom": "Custom",
+    "none": "No Preset",
+    "loaded": "Preset loaded",
+    "loadFailed": "Failed to load preset"
+  },
   "formatTypes": {
     "txt": "Proxy Links",
     "clash-meta": "Clash Meta",
     "clash-premium": "Clash Premium",
-    "sing-box": "Sing-Box"
+    "sing-box": "Sing-Box",
+    "loon": "Loon"
   },
   "inputPlaceholder": {
     "txt": "Paste your proxy links here - one per line\n\nSupported protocols:\n\nhysteria://server:port?protocol=udp&auth=xxx&peer=xxx#Hysteria-Node\nhysteria2://password@server:port/?sni=xxx#Hysteria2-Node\nss://[base64]#SS-Node\nssr://[base64]#SSR-Node\nvmess://[base64]#Vmess-Node\nvless://uuid@server:port?encryption=none&security=tls&type=tcp#Vless-Node\ntrojan://password@server:port#Trojan-Node\nsocks5://server:port#Socks5-Node\nhttp://user:pass@server:port#Http-Node\n\n💡 Tip: The #name suffix becomes the proxy name in your output file",
@@ -127,7 +169,8 @@
   "outputPlaceholder": {
     "txt": "# Your proxy links will appear here",
     "clash": "# Your Clash config will appear here",
-    "sing-box": "# Your sing-box config will appear here"
+    "sing-box": "# Your sing-box config will appear here",
+    "loon": "# Your Loon configuration will appear here"
   },
   "itemsFound": "{count} item(s) found",
   "clear": "Clear",
@@ -140,7 +183,8 @@
   "kernelTypes": {
     "clash-meta": "Clash Meta (Mihomo)",
     "clash-premium": "Clash Premium",
-    "sing-box": "Sing-Box"
+    "sing-box": "Sing-Box",
+    "loon": "Loon"
   },
   "kernelDescriptions": {
     "txt": {
@@ -182,6 +226,16 @@
         "Used by Android, iOS, Windows, macOS, Linux clients",
         "JSON format configuration"
       ]
+    },
+    "loon": {
+      "title": "Loon",
+      "description": "A powerful iOS proxy client with advanced features and rule customization. Supports SS, SSR, VMess, and Trojan protocols.",
+      "features": [
+        "Supports SS, SSR, VMess, Trojan protocols",
+        "Does NOT support VLESS, Hysteria, Hysteria2, HTTP, HTTPS, SOCKS5",
+        "iOS exclusive with rich scripting support",
+        "INI-style configuration format with ACL4SSR rulesets"
+      ]
     }
   },
   "protocolFiltered": "{count} {protocol} node(s) filtered out (not supported by Clash Premium)",
@@ -193,18 +247,19 @@
   },
   "seoContent": {
     "title": "Free Online Clash & sing-box Converter - Convert Proxy Links",
-    "intro": "ClashConverter is a free online tool that converts various proxy protocols (SS, SSR, VMess, Trojan, Hysteria, VLESS, HTTP, SOCKS5) into Clash YAML or sing-box JSON configuration format. This tool supports Clash Meta (Mihomo), Clash Premium, and Sing-Box, making it the most versatile proxy conversion tool available.",
+    "intro": "ClashConverter is a free online tool that converts various proxy protocols (SS, SSR, VMess, Trojan, Hysteria, VLESS, HTTP, SOCKS5) into Clash YAML, Sing-Box, or Loon configuration format. This tool supports Clash Meta (Mihomo), Clash Premium, Sing-Box, and Loon, making it the most versatile proxy conversion tool available.",
     "privacy": "All conversions happen directly in your browser - your proxy configurations are never uploaded to any server, ensuring complete privacy and security. This makes our converter the safest choice for converting your sensitive proxy configurations.",
     "features": {
       "title": "Key Features of Our Converter",
       "items": [
         "Support for 9 proxy protocols: SS, SSR, VMess, VLESS, Trojan, Hysteria, Hysteria2, HTTP, SOCKS5",
-        "Convert proxy links to Clash YAML or sing-box JSON format instantly",
+        "Convert proxy links to Clash YAML, Sing-Box, or Loon format instantly",
         "Convert Clash YAML back to shareable proxy links",
-        "Support for Clash Meta (Mihomo), Clash Premium, and Sing-Box",
+        "Support for Clash Meta (Mihomo), Clash Premium, Sing-Box, and Loon",
         "Client-side processing - no server upload required",
         "Bulk conversion - process multiple proxy links at once",
         "Automatic proxy group generation with optimized rules",
+        "Protocol filtering with user notifications for incompatible formats",
         "Mobile-friendly design - works on all devices",
         "Free to use with no limitations or registration required"
       ]
@@ -227,7 +282,7 @@
       "title": "How to Use Our Converter",
       "steps": [
         { "title": "Paste Your Proxy Links", "desc": "Enter your proxy links in the input box. Each link should be on a separate line. Supported formats include ss://, ssr://, vmess://, vless://, trojan://, hysteria://, hysteria2://, http://, and socks5://" },
-        { "title": "Select Your Output Format", "desc": "Choose between Clash Meta (Mihomo) for full protocol support, Clash Premium for legacy compatibility, or sing-box JSON format. Clash Meta and sing-box support VLESS, Hysteria, and Hysteria2, while Clash Premium does not." },
+        { "title": "Select Your Output Format", "desc": "Choose between Clash Meta (Mihomo) for full protocol support, Clash Premium for legacy compatibility, or sing-box format. Clash Meta and sing-box support VLESS, Hysteria, and Hysteria2, while Clash Premium does not." },
         { "title": "Convert & Download", "desc": "Click the convert button and your configuration will be generated instantly. You can then download the config file or copy it to your clipboard." }
       ]
     },
@@ -267,14 +322,14 @@
     "faq": {
       "title": "Frequently Asked Questions",
       "items": [
-        { "q": "What is Clash Converter?", "a": "Clash Converter is a free online tool that converts various proxy protocols (SS, SSR, VMess, Trojan, Hysteria, VLESS, HTTP, SOCKS5) into Clash YAML or sing-box JSON configuration format. It supports Clash Meta (Mihomo), Clash Premium, and Sing-Box." },
+        { "q": "What is Clash Converter?", "a": "Clash Converter is a free online tool that converts various proxy protocols (SS, SSR, VMess, Trojan, Hysteria, VLESS, HTTP, SOCKS5) into Clash YAML or sing-box configuration format. It supports Clash Meta (Mihomo), Clash Premium, and Sing-Box." },
         { "q": "Is Clash Converter safe to use?", "a": "Yes, Clash Converter is completely safe and privacy-focused. All conversion happens client-side in your browser. Your proxy configurations are never uploaded to any server, ensuring complete privacy and security." },
         { "q": "Which proxy protocols are supported?", "a": "Clash Converter supports 9 proxy protocols: Shadowsocks (SS), ShadowsocksR (SSR), VMess, VLESS, Trojan, Hysteria, Hysteria2, HTTP, and SOCKS5. It can convert both to and from Clash YAML format." },
         { "q": "What is the difference between Clash Meta and Clash Premium?", "a": "Clash Meta (Mihomo) is the actively maintained version that supports all modern protocols including VLESS, Hysteria, and Hysteria2. Clash Premium is the original kernel that is no longer maintained and does not support these newer protocols." },
         { "q": "How do I convert proxy links to Clash format?", "a": "Simply paste your proxy links (one per line) into the input box. Each link should be in the format like ss://base64#name, vmess://base64#name, etc. Click \"Convert\" and the Clash YAML configuration will be generated instantly." },
         { "q": "Can I convert Clash YAML back to proxy links?", "a": "Yes! Click the \"Swap Direction\" button to switch from \"Proxies to YAML\" mode to \"YAML to Proxies\" mode. Paste your Clash YAML config and the tool will extract and convert all proxy nodes back to shareable links." },
         { "q": "Why should I use this clash converter?", "a": "Our clash converter offers the most comprehensive protocol support, works entirely in your browser for privacy, has no limitations or registration requirements, and is regularly updated to support the latest proxy protocols." },
-        { "q": "Does this work with Clash Verge and other clients?", "a": "Yes! The YAML output is compatible with all Clash-based clients including Clash Verge, Clash Nyanpasu, Clash for Android, Clash for Windows, and other clients that use Clash Meta (Mihomo) or Clash Premium kernels. The sing-box JSON output works with sing-box clients on all platforms." },
+        { "q": "Does this work with Clash Verge and other clients?", "a": "Yes! The YAML output is compatible with all Clash-based clients including Clash Verge, Clash Nyanpasu, Clash for Android, Clash for Windows, and other clients that use Clash Meta (Mihomo) or Clash Premium kernels. The sing-box output works with sing-box clients on all platforms." },
         { "q": "What is sing-box and why should I use it?", "a": "sing-box is a universal proxy platform that supports multiple protocols and platforms. It's actively maintained and works on Android, iOS, Windows, macOS, and Linux. sing-box supports SS, VMess, VLESS, Trojan, Hysteria, Hysteria2, and HTTP protocols. Use sing-box if you need cross-platform compatibility or prefer JSON configuration format." },
         { "q": "Which protocols are supported for sing-box output?", "a": "sing-box output supports SS, VMess, VLESS, Trojan, Hysteria, Hysteria2, and HTTP protocols. SSR and SOCKS5 are NOT supported for sing-box format - these will be filtered out with a notification if present in your input." },
         { "q": "Why can't I detect latency in Hy2 nodes in ShadowRocket?", "a": "Please modify the configuration in the app: Settings – Test Method – CONNNECT" }
