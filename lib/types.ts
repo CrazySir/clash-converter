@@ -18,4 +18,4 @@ export interface ParsedProxy {
 }
 
 // Output format types
-export type OutputFormat = 'clash-meta' | 'clash-premium' | 'sing-box';
+export type OutputFormat = 'clash-meta' | 'clash-premium' | 'sing-box' | 'loon';

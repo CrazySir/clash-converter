@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-02-01
+
+### Added
+- **Loon Format Support**: Convert proxy configurations to Loon .conf format
+  - Full INI-style configuration with [General], [Proxy], [Proxy Group], [Rule], [Remote Rule] sections
+  - Support for SS, SSR, VMess, and Trojan protocols
+  - Automatic proxy group generation with optimized routing rules
+  - Comprehensive rule set with ACL4SSR rulesets
+  - MITM configuration empty by default (can be customized by users)
+- **Protocol Filtering Notifications**: Toast notifications when nodes are filtered due to format incompatibility
+  - Clash Premium: VLESS, Hysteria, Hysteria2 filtered with warnings
+  - Sing-Box: SSR, SOCKS5 filtered with warnings
+  - Loon: HTTP, HTTPS, SOCKS5, VLESS, Hysteria, Hysteria2 filtered with warnings
+
+### Enhanced
+- **Parser Improvements**
+  - HTTP parser now correctly skips Telegram links to prevent conflicts
+  - Better handling of edge cases in protocol detection
+- **Loon Generator**
+  - Extended BaseFormatGenerator with Loon-specific configuration
+  - Automatic proxy name deduplication and formatting
+  - Optimized rule sets for Chinese and international traffic
+
+### Technical
+- Added `lib/loon/` directory with Loon-specific generator and configuration
+- Implemented `LoonGenerator` class extending `BaseFormatGenerator`
+- Created ACL4SSR-based rule configuration with remote rule support
+- Added format registry support for Loon format
+
+### Fixed
+- HTTP parser conflict with Telegram SOCKS links (both start with `https://`)
+- Toast notification state management for filtered protocol counts
+
 ## [1.0.0] - 2025-01-25
 
 ### Added

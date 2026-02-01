@@ -24,6 +24,7 @@ A client-side proxy configuration converter that transforms various proxy protoc
   - **Clash Meta (Mihomo)** - Full protocol support
   - **Clash Premium** - Legacy compatibility
   - **Sing-Box** - Universal proxy platform (JSON)
+  - **Loon** - iOS proxy client (INI format)
 - **Bidirectional Conversion**: Convert between proxy links, Clash YAML, and Sing-Box JSON
 - **CodeMirror Editor**: Full-featured code preview with syntax highlighting for YAML/JSON
 - **Protocol-specific Dialogs**: Edit individual proxy nodes with dedicated dialog UI
@@ -134,7 +135,8 @@ clashconverter/
 │   ├── parsers/              # Input parsers
 │   ├── generators/           # Output generators
 │   ├── clash/                # Clash-specific modules
-│   └── singbox/              # Sing-Box specific modules
+│   ├── singbox/              # Sing-Box specific modules
+│   └── loon/                 # Loon specific modules
 ├── messages/                 # next-intl translations
 ├── middleware.ts             # Locale detection middleware
 └── public/                   # Static assets
@@ -176,6 +178,7 @@ Each protocol has its own adapter class for parsing and generation:
 | Clash Meta | ✅ | ✅ | Full protocol support |
 | Clash Premium | ✅ | ✅ | No VLESS/Hysteria/Hysteria2 |
 | Sing-Box | ✅ | ✅ | No SSR/SOCKS5 support |
+| Loon | ✅ | ✅ | iOS client, SS/SSR/VMess/Trojan only |
 
 ## Configuration
 
@@ -200,17 +203,18 @@ NEXT_PUBLIC_ENABLE_DNS_CONFIG=true
 
 ### Kernel Compatibility
 
-| Feature | Clash Meta (Mihomo) | Clash Premium | Sing-Box |
-|---------|---------------------|---------------|----------|
-| VLESS | ✅ | ❌ | ✅ |
-| Hysteria | ✅ | ❌ | ✅ |
-| Hysteria2 | ✅ | ❌ | ✅ |
-| VMess | ✅ | ✅ | ✅ |
-| Trojan | ✅ | ✅ | ✅ |
-| SS | ✅ | ✅ | ✅ |
-| SSR | ✅ | ✅ | ❌ |
-| HTTP | ✅ | ✅ | ✅ |
-| SOCKS5 | ✅ | ✅ | ❌ |
+| Feature | Clash Meta (Mihomo) | Clash Premium | Sing-Box | Loon |
+|---------|---------------------|---------------|----------|------|
+| VLESS | ✅ | ❌ | ✅ | ❌ |
+| Hysteria | ✅ | ❌ | ✅ | ❌ |
+| Hysteria2 | ✅ | ❌ | ✅ | ❌ |
+| VMess | ✅ | ✅ | ✅ | ✅ |
+| Trojan | ✅ | ✅ | ✅ | ✅ |
+| SS | ✅ | ✅ | ✅ | ✅ |
+| SSR | ✅ | ✅ | ❌ | ✅ |
+| HTTP | ✅ | ✅ | ✅ | ❌ |
+| HTTPS | ✅ | ✅ | ✅ | ❌ |
+| SOCKS5 | ✅ | ✅ | ❌ | ❌ |
 
 ## SEO
 

@@ -367,7 +367,12 @@ export function parseVless(link: string): ParsedProxy | null {
 }
 
 // HTTP parser: http://user:pass@server:port
+// Note: Must NOT match Telegram links (https://t.me/socks or https://t.me/http)
 export function parseHttp(link: string): ParsedProxy | null {
+  // Skip Telegram links - they are handled by parseTelegramLink
+  if (link.startsWith('https://t.me/socks') || link.startsWith('https://t.me/http')) {
+    return null;
+  }
   if (!link.startsWith('http://') && !link.startsWith('https://')) return null;
 
   try {
