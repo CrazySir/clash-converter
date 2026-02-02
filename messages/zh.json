@@ -45,6 +45,16 @@
           "name": "站长之家 Ping",
           "desc": "检测 IP 或端口在中国大陆是否可达",
           "url": "https://ping.chinaz.com/"
+        },
+        {
+          "name": "NextTrace",
+          "desc": "开源的可视化路由追踪工具，支持多种路由协议",
+          "url": "https://github.com/nxtrace/NTrace-core"
+        },
+        {
+          "name": "Adysec 脚本",
+          "desc": "VPS 综合测速脚本，用于全面性能测试",
+          "url": "https://github.com/adysec/script"
         }
       ]
     }
@@ -68,7 +78,7 @@
       "loon": {
         "name": "Loon",
         "description": "功能强大的 iOS 代理客户端，支持高级功能和规则自定义。支持 SS、SSR、VMess、Trojan 协议。",
-        "url": "https://apps.apple.com/cn/app/loon-for-ipad/id370650648"
+        "url": "https://apps.apple.com/us/app/loon/id1373567447"
       },
       "sing-box": {
         "name": "Sing-Box",
@@ -84,6 +94,16 @@
         "name": "V2RayNG",
         "description": "免费开源的 Android 客户端，支持 V2Ray 等多种协议。",
         "url": "https://github.com/2dust/v2rayNG/releases"
+      },
+      "flclash": {
+        "name": "FlClash",
+        "description": "现代代理客户端，支持多种协议。支持 Windows、macOS、Linux 和 Android。",
+        "url": "https://github.com/chen08209/FlClash/releases"
+      },
+      "clash-meta-android": {
+        "name": "Clash Meta for Android",
+        "description": "Clash Meta (Mihomo) 内核的官方 Android 客户端。支持所有现代代理协议。",
+        "url": "https://github.com/MetaCubeX/ClashMetaForAndroid/releases"
       }
     }
   },

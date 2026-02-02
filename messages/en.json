@@ -45,6 +45,16 @@
           "name": "Chinaz Ping",
           "desc": "Check if IP or port is reachable from China",
           "url": "https://ping.chinaz.com/"
+        },
+        {
+          "name": "NextTrace",
+          "desc": "An open-source visual route tracing tool that supports multiple routing protocols",
+          "url": "https://github.com/nxtrace/NTrace-core"
+        },
+        {
+          "name": "Adysec Script",
+          "desc": "VPS speed test script for comprehensive performance testing",
+          "url": "https://github.com/adysec/script"
         }
       ]
     }
@@ -68,7 +78,7 @@
       "loon": {
         "name": "Loon",
         "description": "Powerful iOS proxy client with advanced features. Supports SS, SSR, VMess, and Trojan protocols with rich rule customization.",
-        "url": "https://apps.apple.com/app/loon-for-ipad/id370650648"
+        "url": "https://apps.apple.com/us/app/loon/id1373567447"
       },
       "sing-box": {
         "name": "Sing-Box",
@@ -84,6 +94,16 @@
         "name": "V2RayNG",
         "description": "Free and open-source Android client for V2Ray and other protocols.",
         "url": "https://github.com/2dust/v2rayNG/releases"
+      },
+      "flclash": {
+        "name": "FlClash",
+        "description": "Modern proxy client with support for multiple protocols. Supports Windows, macOS, Linux, and Android.",
+        "url": "https://github.com/chen08209/FlClash/releases"
+      },
+      "clash-meta-android": {
+        "name": "Clash Meta for Android",
+        "description": "Official Android client for Clash Meta (Mihomo) kernel. Supports all modern proxy protocols.",
+        "url": "https://github.com/MetaCubeX/ClashMetaForAndroid/releases"
       }
     }
   },

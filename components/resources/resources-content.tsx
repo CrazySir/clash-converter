@@ -42,6 +42,14 @@ const clients = [
     id: 'v2rayng',
     icon: '📱',
   },
+  {
+    id: 'flclash',
+    icon: '⚡',
+  },
+  {
+    id: 'clash-meta-android',
+    icon: '🤖',
+  },
 ] as const;
 
 const proxyScripts = [
