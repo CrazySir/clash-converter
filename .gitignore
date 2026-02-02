@@ -176,3 +176,4 @@ pnpm-lock.yaml
 
 # IDEA
 .idea
+.claude/settings.local.json
