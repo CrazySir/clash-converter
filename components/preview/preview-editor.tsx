@@ -40,7 +40,7 @@ interface PreviewEditorProps {
   debounceMs?: number;
 }
 
-type LanguageType = 'json' | 'yaml' | 'plaintext';
+export type LanguageType = 'json' | 'yaml' | 'plaintext';
 type ThemeMode = 'light' | 'dark';
 
 interface EditorCompartments {

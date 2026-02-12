@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download, Info } from 'lucide-react';
-import { PreviewEditor } from '@/components/preview/preview-editor';
+import { PreviewEditor, type LanguageType } from '@/components/preview/preview-editor';
 import { FormatSelector } from './converter-format-selector';
 import { ActionButtons } from './converter-action-buttons';
 import { SwapButton } from './converter-swap-button';
@@ -20,7 +20,7 @@ import { FormatType } from '@/lib/parser';
 interface OutputSectionProps {
   output: string;
   outputFormat: FormatType;
-  outputLanguage: string;
+  outputLanguage: LanguageType;
   outputPlaceholder: string;
   itemCount: number;
   kernelTitle: string;

@@ -1,4 +1,5 @@
 import { FormatType } from '@/lib/parser';
+import type { LanguageType } from '@/components/preview/preview-editor';
 
 /**
  * Generate timestamp for download filename
@@ -18,7 +19,7 @@ export function generateTimestamp(): string {
 /**
  * Get CodeMirror language for a given format
  */
-export function getLanguageForFormat(format: FormatType): string {
+export function getLanguageForFormat(format: FormatType): LanguageType {
   switch (format) {
     case 'sing-box':
       return 'json';

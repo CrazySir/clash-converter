@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { FileText, Info } from 'lucide-react';
-import { PreviewEditor } from '@/components/preview/preview-editor';
+import { PreviewEditor, type LanguageType } from '@/components/preview/preview-editor';
 import { FormatSelector } from './converter-format-selector';
 import { ItemCount } from './converter-item-count';
 import { ProtocolCards } from './converter-protocol-cards';
@@ -19,7 +19,7 @@ import { FormatType } from '@/lib/parser';
 interface InputSectionProps {
   input: string;
   inputFormat: FormatType;
-  inputLanguage: string;
+  inputLanguage: LanguageType;
   inputPlaceholder: string;
   itemCount: number;
   onInputChange: (value: string) => void;
