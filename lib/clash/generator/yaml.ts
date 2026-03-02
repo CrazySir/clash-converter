@@ -12,7 +12,7 @@ import {
   HEADER_BANNER,
   FOOTER_BANNER,
   PROXY_GROUPS_CONFIG,
-} from '../config/dns';
+} from '../config/base';
 import { ProtocolAdapterRegistry } from '../../adapters/protocol-adapter';
 
 /**
