@@ -1,17 +1,17 @@
 /**
  * Sing-Box JSON format generator
  * Generates Sing-Box JSON configuration from ProxyNode array
- * Does NOT support SSR, SOCKS5
+ * Supports all 9 protocols: SS, SSR, VMess, VLESS, Trojan, Hysteria, Hysteria2, HTTP, SOCKS5
  */
 
 import type { ProxyNode } from '../types';
 import type { FormatType } from '../core/interfaces';
 import { BaseFormatGenerator } from '../core/base-generator';
-import { generateSingBoxConfig } from '../singbox/generator';
+import { generateSingBoxConfig, SING_BOX_SUPPORTED_PROTOCOLS } from '../singbox/generator';
 
 /**
  * Generator for Sing-Box JSON format
- * Does NOT support SSR, SOCKS5 (will filter them out)
+ * Supports all protocols (SSR is converted to Shadowsocks, SOCKS5 uses socks outbound)
  */
 export class SingBoxJsonGenerator extends BaseFormatGenerator {
   readonly format: FormatType = 'sing-box';
@@ -45,18 +45,17 @@ export class SingBoxJsonGenerator extends BaseFormatGenerator {
   /**
    * Filter proxies to exclude unsupported protocols
    * @param proxies - All proxy nodes
-   * @returns Filtered proxy nodes (excluding SSR, SOCKS5)
+   * @returns Filtered proxy nodes
    */
   public filterProxies(proxies: ProxyNode[]): ProxyNode[] {
-    const unsupported = new Set(['ssr', 'socks5']);
-    return proxies.filter(p => !unsupported.has(p.type));
+    return proxies.filter(p => SING_BOX_SUPPORTED_PROTOCOLS.has(p.type));
   }
 
   /**
    * Get the set of protocols supported by Sing-Box
-   * @returns Set of supported protocol types (excludes SSR, SOCKS5)
+   * @returns Set of supported protocol types
    */
   getSupportedProtocols(): Set<string> {
-    return new Set(['ss', 'vmess', 'vless', 'trojan', 'hysteria', 'hysteria2', 'http']);
+    return SING_BOX_SUPPORTED_PROTOCOLS;
   }
 }

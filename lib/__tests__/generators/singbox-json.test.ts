@@ -22,24 +22,24 @@ describe('SingBoxJsonGenerator (lib)', () => {
   });
 
   describe('filterProxies method', () => {
-    it('should filter out SSR and SOCKS5 protocols', () => {
+    it('should support all 9 protocols including SSR and SOCKS5', () => {
       const mockProxies = [
         { name: 'test1', type: 'ss', server: '1.1.1.1', port: 1 },
-        { name: 'test2', type: 'ssr', server: '2.2.2.2', port: 2 }, // Should be filtered
+        { name: 'test2', type: 'ssr', server: '2.2.2.2', port: 2 },
         { name: 'test3', type: 'vmess', server: '3.3.3.3', port: 3, uuid: 'abc' },
         { name: 'test4', type: 'vless', server: '4.4.4.4', port: 4, uuid: 'def' },
         { name: 'test5', type: 'trojan', server: '5.5.5.5', port: 5, password: 'pass' },
         { name: 'test6', type: 'hysteria2', server: '6.6.6.6', port: 6, password: 'pass2' },
         { name: 'test7', type: 'http', server: '7.7.7.7', port: 7, username: 'user', password: 'pass' },
-        { name: 'test8', type: 'socks5', server: '8.8.8.8', port: 8 }, // Should be filtered
+        { name: 'test8', type: 'socks5', server: '8.8.8.8', port: 8 },
       ] as any;
 
       const filtered = generator.filterProxies(mockProxies);
 
-      // Should exclude ssr and socks5
-      expect(filtered.length).toBeLessThan(mockProxies.length);
-      expect(filtered.some((p: any) => p.type === 'ssr')).toBe(false);
-      expect(filtered.some((p: any) => p.type === 'socks5')).toBe(false);
+      // Should NOT filter out any protocols now
+      expect(filtered.length).toEqual(mockProxies.length);
+      expect(filtered.some((p: any) => p.type === 'ssr')).toBe(true);
+      expect(filtered.some((p: any) => p.type === 'socks5')).toBe(true);
     });
 
     it('should preserve supported proxy properties', () => {
@@ -56,7 +56,7 @@ describe('SingBoxJsonGenerator (lib)', () => {
   });
 
   describe('getSupportedProtocols method', () => {
-    it('should return set of supported protocols (excludes SSR and SOCKS5)', () => {
+    it('should return set of supported protocols (includes SSR and SOCKS5)', () => {
       const supported = generator.getSupportedProtocols();
 
       expect(supported.has('ss')).toBe(true);
@@ -67,9 +67,9 @@ describe('SingBoxJsonGenerator (lib)', () => {
       expect(supported.has('hysteria2')).toBe(true);
       expect(supported.has('http')).toBe(true);
 
-      // Should NOT include SSR and SOCKS5
-      expect(supported.has('ssr')).toBe(false);
-      expect(supported.has('socks5')).toBe(false);
+      // Should NOW include SSR and SOCKS5
+      expect(supported.has('ssr')).toBe(true);
+      expect(supported.has('socks5')).toBe(true);
     });
   });
 

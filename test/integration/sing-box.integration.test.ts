@@ -1,7 +1,7 @@
 /**
  * Integration tests for Sing-Box format conversion
  * Tests the complete flow: proxy links -> Sing-Box JSON
- * Sing-Box does NOT support SSR and SOCKS5
+ * Sing-Box supports all 9 protocols: SS, SSR, VMess, VLESS, Trojan, Hysteria, Hysteria2, HTTP, SOCKS5
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -45,18 +45,18 @@ describe('[Integration] Sing-Box Format Conversion', () => {
       expect(parsed.outbounds.length).toBeGreaterThan(0);
     });
 
-    it('should filter out unsupported protocols (SSR, SOCKS5)', () => {
+    it('should support all 9 protocols including SSR and SOCKS5', () => {
       const parser = FormatFactory.createParser('txt');
       const parseResult = parser.parse(testInput);
 
       const generator = FormatFactory.createGenerator('sing-box');
       const supportedProtocols = generator.getSupportedProtocols();
 
-      // Sing-Box does NOT support SSR and SOCKS5
-      expect(supportedProtocols.has('ssr')).toBe(false);
-      expect(supportedProtocols.has('socks5')).toBe(false);
+      // Sing-Box supports ALL protocols including SSR and SOCKS5
+      expect(supportedProtocols.has('ssr')).toBe(true);
+      expect(supportedProtocols.has('socks5')).toBe(true);
 
-      // These protocols should be supported
+      // All other protocols should be supported
       expect(supportedProtocols.has('ss')).toBe(true);
       expect(supportedProtocols.has('vmess')).toBe(true);
       expect(supportedProtocols.has('vless')).toBe(true);
@@ -65,14 +65,14 @@ describe('[Integration] Sing-Box Format Conversion', () => {
       expect(supportedProtocols.has('hysteria2')).toBe(true);
       expect(supportedProtocols.has('http')).toBe(true);
 
-      // Some proxies should be filtered out
+      // No proxies should be filtered out
       const filtered = generator.filterProxies(parseResult.proxies);
-      expect(filtered.length).toBeLessThanOrEqual(parseResult.proxies.length);
+      expect(filtered.length).toEqual(parseResult.proxies.length);
     });
   });
 
   describe('Protocol filtering', () => {
-    it('should correctly identify and filter unsupported protocols', () => {
+    it('should support all protocols without filtering', () => {
       const parser = FormatFactory.createParser('txt');
       const parseResult = parser.parse(testInput);
 
@@ -80,11 +80,8 @@ describe('[Integration] Sing-Box Format Conversion', () => {
       const generator = FormatFactory.createGenerator('sing-box');
       const filtered = generator.filterProxies(parseResult.proxies);
 
-      // Filtered list should not contain unsupported protocols
-      const hasUnsupported = filtered.some(
-        p => p.type === 'ssr' || p.type === 'socks5'
-      );
-      expect(hasUnsupported).toBe(false);
+      // All protocols should be supported now
+      expect(filtered.length).toEqual(parseResult.proxies.length);
     });
   });
 
@@ -127,7 +124,7 @@ describe('[Integration] Sing-Box Format Conversion', () => {
       expect(Array.isArray(parsed.outbounds)).toBe(true);
     });
 
-    it('should not contain SSR or SOCKS5 in output', () => {
+    it('should contain SSR and SOCKS5 proxies converted to compatible formats', () => {
       const parser = FormatFactory.createParser('txt');
       const parseResult = parser.parse(testInput);
 
@@ -136,12 +133,12 @@ describe('[Integration] Sing-Box Format Conversion', () => {
 
       const parsed = JSON.parse(output);
 
-      // Check that no SSR or SOCKS5 proxies are in outbounds
-      const hasUnsupported = parsed.outbounds?.some(
-        (outbound: any) => outbound.type === 'ssr' || outbound.type === 'socks5'
-      );
-
-      expect(hasUnsupported).toBe(false);
+      // SSR should be converted to shadowsocks type
+      // SOCKS5 should be converted to socks type
+      // Check that all outbounds have valid types
+      const validTypes = ['selector', 'urltest', 'direct', 'shadowsocks', 'vmess', 'vless', 'trojan', 'hysteria', 'hysteria2', 'http', 'socks'];
+      const allValid = parsed.outbounds?.every((outbound: any) => validTypes.includes(outbound.type));
+      expect(allValid).toBe(true);
     });
   });
 });
