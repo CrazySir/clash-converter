@@ -1,99 +1,105 @@
 {
-  "log": {
-    "disabled": false,
-    "level": "info",
-    "timestamp": true
-  },
   "dns": {
     "servers": [
       {
-        "tag": "proxyDns",
-        "address": "8.8.8.8",
-        "detour": "select"
+        "tag": "remote",
+        "address": "1.1.1.1",
+        "detour": "节点选择"
       },
       {
-        "tag": "localDns",
+        "tag": "local",
         "address": "https://223.5.5.5/dns-query",
         "detour": "direct"
       },
       {
         "tag": "block",
-        "address": "rcode://success"
+        "address": "rcode://refused"
       }
     ],
     "rules": [
       {
-        "domain": [
-          "ghproxy.com",
-          "cdn.jsdelivr.net",
-          "testingcf.jsdelivr.net"
+        "outbound": [
+          "any"
         ],
-        "server": "localDns"
+        "server": "local"
       },
       {
-        "geosite": [
+        "clash_mode": "全局代理",
+        "server": "remote"
+      },
+      {
+        "clash_mode": "关闭代理",
+        "server": "local"
+      },
+      {
+        "rule_set": [
+          "geosite-cn"
+        ],
+        "server": "local"
+      },
+      {
+        "rule_set": [
           "category-ads-all"
         ],
         "server": "block"
-      },
-      {
-        "server": "localDns",
-        "outbound": "any",
-        "disable_cache": true
-      },
-      {
-        "geosite": [
-          "cn"
-        ],
-        "server": "localDns"
-      },
-      {
-        "server": "localDns",
-        "clash_mode": "direct"
-      },
-      {
-        "server": "proxyDns",
-        "clash_mode": "global"
-      },
-      {
-        "geosite": [
-          "geolocation-!cn"
-        ],
-        "server": "proxyDns"
       }
     ],
+    "final": "remote",
+    "disable_cache": false,
     "strategy": "ipv4_only"
+  },
+  "experimental": {
+    "clash_api": {
+      "default_mode": "海外代理",
+      "external_controller": "127.0.0.1:9090",
+      "secret": ""
+    },
+    "cache_file": {
+      "enabled": true
+    }
   },
   "inbounds": [
     {
-      "sniff": true,
-      "type": "mixed",
-      "listen": "127.0.0.1",
-      "listen_port": 1081
+      "type": "tun",
+      "auto_route": true,
+      "domain_strategy": "prefer_ipv4",
+      "endpoint_independent_nat": true,
+      "address": [
+        "172.19.0.1/30",
+        "2001:0470:f9da:fdfa::1/64"
+      ],
+      "mtu": 9000,
+      "sniff_override_destination": true,
+      "stack": "system",
+      "strict_route": true
     },
     {
-      "stack": "system",
-      "auto_route": true,
-      "inet4_address": "172.19.0.1/30",
-      "mtu": 9000,
+      "type": "socks",
+      "tag": "socks-in",
+      "listen": "127.0.0.1",
+      "listen_port": 2333,
       "sniff": true,
-      "strict_route": true,
-      "type": "tun",
-      "platform": {
-        "http_proxy": {
-          "enabled": true,
-          "server": "127.0.0.1",
-          "server_port": 1081
-        }
-      }
+      "sniff_override_destination": true,
+      "domain_strategy": "prefer_ipv4",
+      "users": []
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 2334,
+      "sniff": true,
+      "sniff_override_destination": true,
+      "domain_strategy": "prefer_ipv4",
+      "users": []
     }
   ],
   "outbounds": [
     {
-      "tag": "select",
       "type": "selector",
+      "tag": "节点选择",
       "outbounds": [
-        "auto",
+        "自动选择",
         "v2rayse_test_1",
         "v2rayse_test_2",
         "defaultName_1",
@@ -109,48 +115,8 @@
       ]
     },
     {
-      "tag": "auto",
       "type": "urltest",
-      "outbounds": [
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ],
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "1m",
-      "tolerance": 50
-    },
-    {
-      "tag": "🤖 OpenAI",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🌌 Google",
-      "type": "selector",
+      "tag": "自动选择",
       "outbounds": [
         "v2rayse_test_1",
         "v2rayse_test_2",
@@ -167,207 +133,8 @@
       ]
     },
     {
-      "tag": "📟 Telegram",
-      "type": "selector",
-      "outbounds": [
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🐦 Twitter",
-      "type": "selector",
-      "outbounds": [
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "👤 Facebook",
-      "type": "selector",
-      "outbounds": [
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🛍️ Amazon",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🍎 Apple",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🧩 Microsoft",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🎮 Game",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "📺 Bilibili",
-      "type": "selector",
-      "outbounds": [
-        "direct"
-      ]
-    },
-    {
-      "tag": "🎬 MediaVideo",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🌏 !cn",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "v2rayse_test_1",
-        "v2rayse_test_2",
-        "defaultName_1",
-        "v2rayse_test_3",
-        "defaultName_2",
-        "defaultName_3",
-        "Hys-1.2.3.4",
-        "sgp-optimize-Hysteria2",
-        "test",
-        "sgp-normal-reality",
-        "sgp-ss-normal",
-        "defaultName_4"
-      ]
-    },
-    {
-      "tag": "🌏 cn",
-      "type": "selector",
-      "outbounds": [
-        "direct",
-        "select"
-      ]
-    },
-    {
-      "tag": "🛑 AdBlock",
-      "type": "selector",
-      "outbounds": [
-        "block",
-        "direct"
-      ]
-    },
-    {
-      "tag": "direct",
-      "type": "direct"
-    },
-    {
-      "tag": "block",
-      "type": "block"
-    },
-    {
-      "tag": "dns-out",
-      "type": "dns"
+      "type": "direct",
+      "tag": "direct"
     },
     {
       "tag": "v2rayse_test_1",
@@ -496,169 +263,63 @@
     }
   ],
   "route": {
-    "geoip": {
-      "download_url": "https://github.com/soffchen/sing-geoip/releases/latest/download/geoip.db",
-      "download_detour": "select"
-    },
-    "geosite": {
-      "download_url": "https://github.com/soffchen/sing-geosite/releases/latest/download/geosite.db",
-      "download_detour": "select"
-    },
+    "auto_detect_interface": true,
     "rules": [
       {
+        "action": "sniff"
+      },
+      {
         "protocol": "dns",
-        "outbound": "dns-out"
+        "action": "hijack-dns"
       },
       {
-        "network": "udp",
-        "port": 443,
-        "outbound": "block"
-      },
-      {
-        "clash_mode": "direct",
+        "clash_mode": "关闭代理",
         "outbound": "direct"
       },
       {
-        "clash_mode": "global",
-        "outbound": "select"
+        "clash_mode": "全局代理",
+        "outbound": "节点选择"
       },
       {
-        "domain": [
-          "v2rayse.com",
-          "cfmem.com",
-          "vpnse.org",
-          "cff.pw",
-          "tt.vg"
-        ],
-        "outbound": "select"
-      },
-      {
-        "domain": [
-          "clash.razord.top",
-          "yacd.metacubex.one",
-          "yacd.haishan.me",
-          "d.metacubex.one"
+        "rule_set": [
+          "geosite-cn",
+          "geoip-cn"
         ],
         "outbound": "direct"
       },
       {
-        "geosite": [
-          "openai"
-        ],
-        "outbound": "🤖 OpenAI"
+        "ip_is_private": true,
+        "outbound": "direct"
       },
       {
-        "geosite": [
-          "google",
-          "github"
-        ],
-        "geoip": [
-          "google"
-        ],
-        "outbound": "🌌 Google"
-      },
-      {
-        "geosite": [
-          "telegram"
-        ],
-        "geoip": [
-          "telegram"
-        ],
-        "outbound": "📟 Telegram"
-      },
-      {
-        "geosite": [
-          "twitter"
-        ],
-        "geoip": [
-          "twitter"
-        ],
-        "outbound": "🐦 Twitter"
-      },
-      {
-        "geosite": [
-          "facebook",
-          "instagram"
-        ],
-        "geoip": [
-          "facebook"
-        ],
-        "outbound": "👤 Facebook"
-      },
-      {
-        "geosite": [
-          "amazon"
-        ],
-        "outbound": "🛍️ Amazon"
-      },
-      {
-        "geosite": [
-          "apple-cn",
-          "apple"
-        ],
-        "outbound": "🍎 Apple"
-      },
-      {
-        "geosite": [
-          "microsoft"
-        ],
-        "outbound": "🧩 Microsoft"
-      },
-      {
-        "geosite": [
-          "category-games"
-        ],
-        "outbound": "🎮 Game"
-      },
-      {
-        "geosite": [
-          "bilibili"
-        ],
-        "outbound": "📺 Bilibili"
-      },
-      {
-        "geosite": [
-          "tiktok",
-          "netflix",
-          "hbo",
-          "disney",
-          "primevideo"
-        ],
-        "geoip": [
-          "netflix"
-        ],
-        "outbound": "🎬 MediaVideo"
-      },
-      {
-        "geosite": [
-          "geolocation-!cn"
-        ],
-        "outbound": "🌏 !cn"
-      },
-      {
-        "geosite": [
-          "cn"
-        ],
-        "geoip": [
-          "private",
-          "cn"
-        ],
-        "outbound": "🌏 cn"
-      },
-      {
-        "geosite": [
+        "rule_set": [
           "category-ads-all"
         ],
-        "outbound": "🛑 AdBlock"
+        "action": "reject"
       }
     ],
-    "auto_detect_interface": true,
-    "final": "select"
-  },
-  "experimental": {
-    "cache_file": {
-      "enabled": true,
-      "path": "cache.db"
-    }
+    "rule_set": [
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        "download_detour": "节点选择"
+      },
+      {
+        "tag": "category-ads-all",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs",
+        "download_detour": "节点选择"
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/srs/cn.srs",
+        "download_detour": "节点选择"
+      }
+    ]
   }
 }
