@@ -33,9 +33,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     icons: {
       icon: [
-        {url: "/favicon-512x512.png", sizes: "512x512", type: "image/png"},
+        {url: "/favicon.svg", sizes: "512x512", type: "image/png"},
       ],
-      apple: [{url: "/favicon-512x512.png", sizes: "180x180", type: "image/png"}],
+      apple: [{url: "/favicon.svg", sizes: "180x180", type: "image/png"}],
     },
     ...generateSEOMetadata({locale})
   };

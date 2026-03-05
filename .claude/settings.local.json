@@ -57,7 +57,8 @@
       "Bash(git diff HEAD -- lib/features.ts lib/features.test.ts next.config.ts vitest.config.mjs app/[locale]/debug-env/page.tsx app/api/test-env/route.ts test/clash/input.txt test/clash/expect.yaml test/sing-box/input.txt test/sing-box/current.json test/loon/expect.conf test/loon/current.conf)",
       "Bash(git diff HEAD -- app/[locale]/debug-env/page.tsx)",
       "mcp__firecrawl__firecrawl_scrape",
-      "mcp__firecrawl__firecrawl_search"
+      "mcp__firecrawl__firecrawl_search",
+      "Bash(pnpm run test:*)"
     ],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [

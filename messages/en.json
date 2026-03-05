@@ -296,7 +296,7 @@
   "seoContent": {
     "title": "Free Online Clash & Sing-Box Converter - Convert Proxy Links",
     "intro": "ClashConverter is a free online tool that converts various proxy protocols (SS, SSR, VMess, Trojan, Hysteria, VLESS, HTTP, SOCKS5) into Clash YAML, Sing-Box configuration format.",
-    "privacy": "All conversions happen directly in your browser - your proxy configurations are never uploaded to any server, ensuring complete privacy and security. This makes our converter the safest choice for converting your sensitive proxy configurations.",
+    "privacy": "All conversions happen directly in your local browser - your proxy configurations are never uploaded to any server, ensuring complete privacy and security.",
     "features": {
       "title": "Key Features of Our Converter",
       "items": [

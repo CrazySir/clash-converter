@@ -296,7 +296,7 @@
   "seoContent": {
     "title": "代理链接转换器",
     "intro": "ClashConverter 是一个免费的在线工具，可以将各种代理协议（SS、SSR、VMess、Trojan、Hysteria、VLESS、HTTP、SOCKS5）转换为 Clash YAML、Sing-Box 配置格式。",
-    "privacy": "所有转换都直接在您的浏览器中进行 - 您的代理配置永远不会上传到任何服务器，确保完全的隐私和安全。这使得我们的转换器成为转换敏感代理配置的最安全选择。",
+    "privacy": "所有转换都直接在您的本地浏览器中进行 - 您的代理配置永远不会上传到任何服务器，确保完全的隐私和安全。",
     "features": {
       "title": "我们转换器的核心功能",
       "items": [
