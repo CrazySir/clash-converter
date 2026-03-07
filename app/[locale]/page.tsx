@@ -3,13 +3,13 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { LanguageToggle } from '@/components/language-toggle';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Info, Download } from 'lucide-react';
 import { JSONLDStructuredData } from '@/components/seo/seo-head';
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = useTranslations();
+  const t = await getTranslations();
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
