@@ -5,8 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Info, Download } from 'lucide-react';
+import { JSONLDStructuredData } from '@/components/seo/seo-head';
 
-export default function Home() {
+export default function Home({ params }: { params: Promise<{ locale: string }> }) {
   const t = useTranslations();
 
   return (
@@ -34,9 +35,10 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <div id="converter">
+      <main>
         <Converter />
-      </div>
+        <JSONLDStructuredData locale={params.locale as unknown as string} type="all" pageType="home" />
+      </main>
     </div>
   );
 }

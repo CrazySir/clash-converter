@@ -1,4 +1,5 @@
 import { useState, memo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -47,6 +48,7 @@ export const InputSection = memo(({
   formatOptions,
   labels,
 }: InputSectionProps) => {
+  const t = useTranslations();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const infoButton = (
@@ -95,8 +97,8 @@ export const InputSection = memo(({
       </Card>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{labels.supportedProtocols}</DialogTitle>
-          <DialogDescription>All proxy protocols are supported for conversion</DialogDescription>
+          <DialogTitle>{t('dialog.protocolsTitle')}</DialogTitle>
+          <DialogDescription>{t('dialog.protocolsDescription')}</DialogDescription>
         </DialogHeader>
         <ProtocolCards />
       </DialogContent>

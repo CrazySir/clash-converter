@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 
 const PROTOCOL_CARDS = [
   { name: 'Shadowsocks' },
@@ -7,11 +7,12 @@ const PROTOCOL_CARDS = [
   { name: 'VLESS' },
   { name: 'Trojan' },
   { name: 'Hysteria' },
+  { name: 'Hysteria2' },
   { name: 'HTTP' },
   { name: 'SOCKS5' },
 ] as const;
 
-export const ProtocolCards = memo(() => (
+export const ProtocolCards = React.memo(() => (
   <div className="grid grid-cols-2 gap-3 text-sm">
     {PROTOCOL_CARDS.map((protocol) => (
       <div key={protocol.name} className="flex items-center gap-2 p-2 rounded-lg bg-stone-100 dark:bg-stone-800">

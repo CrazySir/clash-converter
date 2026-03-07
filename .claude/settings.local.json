@@ -58,7 +58,10 @@
       "Bash(git diff HEAD -- app/[locale]/debug-env/page.tsx)",
       "mcp__firecrawl__firecrawl_scrape",
       "mcp__firecrawl__firecrawl_search",
-      "Bash(pnpm run test:*)"
+      "Bash(pnpm run test:*)",
+      "Bash(bash:*)",
+      "Bash(powershell:*)",
+      "WebFetch(domain:localhost)"
     ],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [

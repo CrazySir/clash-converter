@@ -62,7 +62,6 @@ export default async function LocaleLayout({
       <head>
         <PerformancePreconnects />
         <HreflangLinks locale={locale} />
-        <JSONLDStructuredData locale={locale} type="all" /><title></title>
         {ADSENSE_ID && <meta name="google-adsense-account" content={ADSENSE_ID} />}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>

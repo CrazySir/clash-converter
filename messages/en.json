@@ -226,7 +226,20 @@
   "copy": "Copy",
   "copied": "Copied!",
   "swapDirection": "Swap Direction",
+  "editor": {
+    "loading": "Loading editor...",
+    "failedToInitialize": "Editor failed to initialize"
+  },
+  "outputSection": {
+    "kernelFeatures": "Kernel Features",
+    "supportedFeaturesDescription": "Supported features for this kernel"
+  },
+  "close": "Close",
   "supportedProtocols": "Supported Protocols",
+  "dialog": {
+    "protocolsTitle": "Supported Protocols",
+    "protocolsDescription": "All proxy protocols are supported for conversion"
+  },
   "kernelType": "Kernel Type",
   "kernelTypes": {
     "clash-meta": "Clash Meta (Mihomo)",

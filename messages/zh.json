@@ -226,7 +226,20 @@
   "copy": "复制",
   "copied": "已复制！",
   "swapDirection": "切换方向",
+  "editor": {
+    "loading": "正在加载编辑器...",
+    "failedToInitialize": "编辑器初始化失败"
+  },
+  "outputSection": {
+    "kernelFeatures": "内核功能",
+    "supportedFeaturesDescription": "此内核支持的功能"
+  },
+  "close": "关闭",
   "supportedProtocols": "支持的协议",
+  "dialog": {
+    "protocolsTitle": "支持的协议",
+    "protocolsDescription": "所有代理协议均支持转换"
+  },
   "kernelType": "内核类型",
   "kernelTypes": {
     "clash-meta": "Clash Meta (Mihomo)",

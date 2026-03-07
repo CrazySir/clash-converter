@@ -190,8 +190,8 @@ export function HreflangLinks({ locale }: { locale: string }) {
   const baseUrl = seoConfig.siteUrl;
 
   const locales = [
-    { code: 'en', path: '' },
-    { code: 'zh', path: '/zh' }
+    { code: 'en', path: '', isDefault: true },
+    { code: 'zh', path: '/zh', isDefault: false }
   ];
 
   return (
@@ -200,15 +200,10 @@ export function HreflangLinks({ locale }: { locale: string }) {
         <link
           key={loc.code}
           rel="alternate"
-          hrefLang={loc.code === 'en' ? 'x-default' : loc.code}
+          hrefLang={loc.isDefault ? 'x-default' : loc.code}
           href={`${baseUrl}${loc.path}`}
         />
       ))}
-      <link
-        rel="alternate"
-        hrefLang="x-default"
-        href={baseUrl}
-      />
     </>
   );
 }
