@@ -9,7 +9,7 @@ import { JSONLDStructuredData } from '@/components/seo/seo-head';
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations();
+  const t = await getTranslations(locale);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
