@@ -62,7 +62,12 @@
       "Bash(bash:*)",
       "Bash(powershell:*)",
       "WebFetch(domain:localhost)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Skill(frontend-design)",
+      "Bash(pnpm vitest:*)",
+      "Bash(pnpm exec:*)",
+      "Bash(git diff:*)",
+      "Bash(git checkout:*)"
     ],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [
