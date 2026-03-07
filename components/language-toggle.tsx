@@ -38,17 +38,17 @@ export function LanguageToggle() {
   return (
     <Select open={open} onOpenChange={setOpen} value={locale} onValueChange={handleValueChange}>
       <SelectTrigger
-        className="h-9 w-auto min-w-[140px] gap-2 border-stone-200 dark:border-stone-800 bg-transparent px-3"
+        className="group h-10 w-auto min-w-[44px] md:min-w-[140px] gap-2 border-input bg-transparent px-3 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-[0.98] hover:bg-accent hover:text-accent-foreground"
         aria-label="Select language"
       >
-        <Languages className="h-4 w-4" />
+        <Languages className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
         <SelectValue placeholder="Select language">
-          <span className="text-sm">{currentLanguage?.nativeLabel}</span>
+          <span className="text-sm hidden sm:inline">{currentLanguage?.nativeLabel}</span>
         </SelectValue>
       </SelectTrigger>
       <SelectContent align="end" className="min-w-[140px]">
         {languages.map((lang) => (
-          <SelectItem key={lang.value} value={lang.value} className="gap-2">
+          <SelectItem key={lang.value} value={lang.value} className="gap-2 min-h-10 cursor-pointer">
             <span className="flex-1">{lang.nativeLabel}</span>
           </SelectItem>
         ))}
