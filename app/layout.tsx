@@ -1,6 +1,12 @@
-import { GoogleAdSense } from "@/components/google-adsense";
+import type { Metadata } from "next";
 
 const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID;
+
+export const metadata: Metadata = {
+  other: {
+    ...(ADSENSE_ID && { 'google-adsense-account': ADSENSE_ID }),
+  },
+};
 
 export default function RootLayout({
   children,
@@ -9,15 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {ADSENSE_ID && (
-          <>
-            <meta name="google-adsense-account" content={ADSENSE_ID} />
-            <GoogleAdSense adsenseId={ADSENSE_ID} />
-          </>
-        )}
-      </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

@@ -5,7 +5,6 @@ import { getMessages } from 'next-intl/server';
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { GoogleAnalytics } from "@/components/google-analytics";
-import { GoogleAdSense } from "@/components/google-adsense";
 import { Footer } from "@/components/footer";
 import { generateMetadata as generateSEOMetadata, HreflangLinks, JSONLDStructuredData, PerformancePreconnects } from "@/components/seo/seo-head";
 import React from "react";
@@ -37,6 +36,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       ],
       apple: [{url: "/favicon.svg", sizes: "180x180", type: "image/png"}],
     },
+    other: {
+      ...(ADSENSE_ID && { 'google-adsense-account': ADSENSE_ID }),
+    },
     ...generateSEOMetadata({locale})
   };
 }
@@ -58,27 +60,25 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head>
-        <PerformancePreconnects />
-        <HreflangLinks locale={locale} />
-        {ADSENSE_ID && <meta name="google-adsense-account" content={ADSENSE_ID} />}
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <GoogleAnalytics gaId={GA_ID || ''} />
-        <GoogleAdSense adsenseId={ADSENSE_ID || ''} />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NextIntlClientProvider messages={messages}>
-            <div className="flex min-h-screen flex-col">
-              <div className="flex-1">
-                {children}
+    <>
+      <PerformancePreconnects />
+      <HreflangLinks locale={locale} />
+      <html lang={locale} suppressHydrationWarning>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <GoogleAnalytics gaId={GA_ID || ''} />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <NextIntlClientProvider messages={messages}>
+              <div className="flex min-h-screen flex-col">
+                <div className="flex-1">
+                  {children}
+                </div>
+                <Footer />
               </div>
-              <Footer />
-            </div>
-            <Toaster richColors position="top-center" />
-          </NextIntlClientProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+              <Toaster richColors position="top-center" />
+            </NextIntlClientProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }
