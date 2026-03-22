@@ -20,16 +20,16 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const t = await getTranslations();
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ backgroundColor: '#f8f7ff' }}>
+    <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Simplified Background - Stitch-inspired radial gradients */}
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="blob w-[500px] h-[500px] bg-[#e1dbff]/60 top-[-100px] left-[-100px]" />
-        <div className="blob w-[400px] h-[400px] bg-[#c9beff]/50 bottom-[10%] right-[10%]" />
-        <div className="blob w-[300px] h-[300px] bg-[#aba4ff]/40 top-[40%] left-[20%]" />
+        <div className="blob w-[500px] h-[500px] bg-primary/10 top-[-100px] left-[-100px]" />
+        <div className="blob w-[400px] h-[400px] bg-primary/10 bottom-[10%] right-[10%]" />
+        <div className="blob w-[300px] h-[300px] bg-primary/10 top-[40%] left-[20%]" />
       </div>
 
       {/* Simplified Header - neo-card style */}
-      <header className="sticky top-0 z-50 w-full neo-card border-0 bg-lavender-50/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full neo-card border-0 bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 items-center justify-between px-4 md:px-8 lg:max-w-6xl">
           <div className="flex items-center gap-2">
             <Image
@@ -43,7 +43,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <nav className="flex items-center gap-2 md:gap-3" aria-label="Main navigation">
             <Link href="/resources">
               <button
-                className="neo-button group flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-all duration-300 min-h-[44px] rounded-full"
+                className="neo-button group flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 min-h-[44px] rounded-full"
                 aria-label={t('resources.menuTitle')}
               >
                 <Download className="w-4 h-4 transition-transform group-hover:scale-110" />
@@ -52,14 +52,14 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </Link>
             <Link href="/about">
               <button
-                className="neo-button group flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-all duration-300 min-h-[44px] rounded-full"
+                className="neo-button group flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 min-h-[44px] rounded-full"
                 aria-label={t('about')}
               >
                 <Info className="w-4 h-4 transition-transform group-hover:scale-110" />
                 <span className="hidden sm:inline">{t('about')}</span>
               </button>
             </Link>
-            <div className="w-px h-5 bg-slate-300 mx-1 hidden sm:block" aria-hidden="true" />
+            <div className="w-px h-5 bg-border mx-1 hidden sm:block" aria-hidden="true" />
             <LanguageToggle />
             <ThemeToggle />
           </nav>

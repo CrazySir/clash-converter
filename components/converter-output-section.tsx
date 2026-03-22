@@ -63,7 +63,7 @@ export const OutputSection = memo(({
       <Button
         variant="ghost"
         size="sm"
-        className="h-8 w-8 p-0 rounded-full hover:bg-lavender-200 hover:text-lavender-600 transition-all duration-300"
+        className="h-8 w-8 p-0 rounded-full hover:bg-accent/20 hover:text-accent transition-all duration-300"
       >
         <Info className="w-4 h-4" />
       </Button>
@@ -73,11 +73,11 @@ export const OutputSection = memo(({
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <Card className="neo-card relative overflow-hidden rounded-[2.5rem] bg-lavender-50 border-white/60 transition-all duration-300 hover:neo-card-hover h-full flex flex-col">
+        <Card className="neo-card relative overflow-hidden rounded-[2.5rem] bg-card border-border transition-all duration-300 hover:neo-card-hover h-full flex flex-col">
           <CardHeader className="relative z-10 pb-4">
             <div className="flex items-center justify-between">
               <CardTitle
-                className="flex items-center gap-2 cursor-pointer group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lavender-500 focus-visible:ring-offset-2 rounded-[2.5rem] px-2 py-1"
+                className="flex items-center gap-2 cursor-pointer group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-[2.5rem] px-2 py-1"
                 onClick={() => setDialogOpen(true)}
                 role="button"
                 tabIndex={0}
@@ -94,7 +94,7 @@ export const OutputSection = memo(({
                   <Download className="w-5 h-5 text-white" />
                 </div>
                 <span
-                  className="text-lg md:text-xl font-bold text-slate-700 group-hover:text-lavender-600 transition-colors duration-300"
+                  className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300"
                   style={{ fontFamily: 'Nunito, sans-serif' }}
                 >
                   {labels.outputLabel}
@@ -135,15 +135,15 @@ export const OutputSection = memo(({
             />
           </CardContent>
         </Card>
-        <DialogContent className="max-w-md rounded-[2.5rem] border-white/60 bg-lavender-50 neo-card">
+        <DialogContent className="max-w-md rounded-[2.5rem] border-border bg-card neo-card">
           <DialogHeader>
             <DialogTitle
-              className="text-xl font-black text-slate-700"
+              className="text-xl font-black text-foreground"
               style={{ fontFamily: 'Nunito, sans-serif' }}
             >
               Kernel Features
             </DialogTitle>
-            <DialogDescription className="text-slate-500">
+            <DialogDescription className="text-muted-foreground">
               Supported features for this kernel
             </DialogDescription>
           </DialogHeader>
