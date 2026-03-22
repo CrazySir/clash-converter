@@ -80,7 +80,7 @@ export const OutputSection = memo(({
           <CardHeader className="relative z-10 pb-4">
             <div className="flex items-center justify-between">
               <CardTitle
-                className="flex items-center gap-2 cursor-pointer group select-none"
+                className="flex items-center gap-2 cursor-pointer group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED] focus-visible:ring-offset-2 rounded-[32px] px-2 py-1"
                 onClick={() => setDialogOpen(true)}
                 role="button"
                 tabIndex={0}
@@ -91,6 +91,7 @@ export const OutputSection = memo(({
                   }
                 }}
                 title="Click to view kernel features"
+                aria-label={`View kernel features for ${labels.outputLabel}`}
               >
                 <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-[#EC4899] to-[#DB2777] shadow-clay-button transition-all duration-300 group-hover:scale-105 group-hover:shadow-clay-button-hover">
                   <Download className="w-5 h-5 text-white" />
