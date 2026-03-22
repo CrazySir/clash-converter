@@ -65,7 +65,7 @@ export const InputSection = memo(({
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Card className="neo-card relative overflow-hidden rounded-[2.5rem] bg-lavender-50 border-white/60 transition-all duration-300 hover:neo-card-hover">
+      <Card className="neo-card relative overflow-hidden rounded-[2.5rem] bg-lavender-50 border-white/60 transition-all duration-300 hover:neo-card-hover h-full flex flex-col">
         <CardHeader className="relative z-10 pb-4">
           <div className="flex items-center justify-between">
             <CardTitle
@@ -100,13 +100,14 @@ export const InputSection = memo(({
             />
           </div>
         </CardHeader>
-        <CardContent className="relative z-10 space-y-4">
+        <CardContent className="relative z-10 space-y-4 flex-1 flex flex-col">
           <PreviewEditor
             value={input}
             language={inputLanguage}
             height="300px"
             placeholder={inputPlaceholder}
             onChange={onInputChange}
+            className="flex-1"
           />
           <ItemCount
             count={itemCount}

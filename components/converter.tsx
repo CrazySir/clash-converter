@@ -89,9 +89,9 @@ export function Converter() {
       <ConverterHeader title={t('title')} subtitle={t('subtitle')} />
 
       {/* Main converter grid - simplified layout */}
-      <div className="grid gap-8 md:gap-10 md:grid-cols-2 relative">
+      <div className="grid grid-rows-1 gap-8 md:gap-10 md:grid-cols-2 relative">
         {/* Input Section - Left Side */}
-        <div>
+        <div className="min-h-[600px]">
           <InputSection
             input={input}
             inputFormat={inputFormat}
@@ -118,7 +118,7 @@ export function Converter() {
         </div>
 
         {/* Output Section - Right Side */}
-        <div>
+        <div className="min-h-[600px]">
           <OutputSection
             output={output}
             outputFormat={outputFormat}
