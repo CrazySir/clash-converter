@@ -84,14 +84,14 @@ export function Converter() {
   }, [inputFormat, setInput, pendingInputRef]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8 md:p-12 space-y-8 md:space-y-12">
-      {/* Header */}
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 md:py-12 lg:py-16 space-y-6 md:space-y-8">
+      {/* Header - Entrance with stagger */}
       <ConverterHeader title={t('title')} subtitle={t('subtitle')} />
 
-      {/* Main converter grid - simplified layout */}
-      <div className="grid grid-rows-1 gap-8 md:gap-10 md:grid-cols-2 relative">
+      {/* Main converter grid - Asymmetric, purposeful spacing */}
+      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2 lg:gap-8 relative">
         {/* Input Section - Left Side */}
-        <div className="min-h-[600px]">
+        <div className="min-h-[520px] md:min-h-[560px] animate-neo-enter" style={{ animationDelay: '0.05s' }}>
           <InputSection
             input={input}
             inputFormat={inputFormat}
@@ -113,12 +113,12 @@ export function Converter() {
         </div>
 
         {/* Swap Button (centered) - Desktop only */}
-        <div className="absolute left-1/2 top-[180px] -translate-x-1/2 z-10 hidden md:block">
+        <div className="absolute left-1/2 top-[180px] -translate-x-1/2 z-10 hidden lg:block">
           <SwapButton onClick={handleSwapFormat} variant="desktop" />
         </div>
 
         {/* Output Section - Right Side */}
-        <div className="min-h-[600px]">
+        <div className="min-h-[520px] md:min-h-[560px] animate-neo-enter" style={{ animationDelay: '0.1s' }}>
           <OutputSection
             output={output}
             outputFormat={outputFormat}
@@ -145,7 +145,7 @@ export function Converter() {
       </div>
 
       {/* Mobile swap button */}
-      <div className="md:hidden flex justify-center mt-4">
+      <div className="lg:hidden flex justify-center animate-neo-enter" style={{ animationDelay: '0.15s' }}>
         <SwapButton onClick={handleSwapFormat} variant="mobile" />
       </div>
 
