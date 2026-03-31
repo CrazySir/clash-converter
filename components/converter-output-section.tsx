@@ -9,12 +9,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, Info, Lightbulb } from 'lucide-react';
+import { Download, Info, Copy, Check, Cpu } from 'lucide-react';
 import { PreviewEditor, type LanguageType } from '@/components/preview/preview-editor';
 import { FormatSelector } from './converter-format-selector';
-import { SwapButton } from './converter-swap-button';
 import { KernelFeatures } from './converter-kernel-features';
 import { FormatType } from '@/lib/parser';
+import { useState as useReactState } from 'react';
 
 interface OutputSectionProps {
   output: string;
@@ -50,19 +50,25 @@ export const OutputSection = memo(({
   kernelFeatures: kernelFeaturesList,
   onCopy,
   onDownload,
-  onSwapFormat,
   onFormatChange,
   formatOptions,
   labels,
 }: OutputSectionProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [copied, setCopied] = useReactState(false);
+
+  const handleCopy = () => {
+    onCopy();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const infoButton = (
     <DialogTrigger asChild>
       <Button
         variant="ghost"
         size="sm"
-        className="h-7 w-7 p-0 rounded-full hover:bg-clay-accent/10 hover:text-clay-accent transition-all duration-300"
+        className="h-6 w-6 p-0 hover:bg-neo-border dark:hover:bg-neo-borderDark text-neo-muted dark:text-neo-mutedLight hover:text-neo-foreground dark:hover:text-white transition-colors duration-200 rounded-neo"
       >
         <Info className="w-3.5 h-3.5" />
       </Button>
@@ -72,11 +78,11 @@ export const OutputSection = memo(({
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <Card className="clay-card dark:clay-card-dark relative overflow-hidden rounded-[32px] bg-white dark:bg-[#1a1b26] border-white/20 dark:border-white/10 transition-all duration-500 hover:-translate-y-1 hover:clay-card-hover dark:hover:clay-card-hover-dark h-[560px] flex flex-col">
-          {/* Decorative gradient orb */}
-          <div className="absolute -top-20 -left-20 w-40 h-40 rounded-full bg-gradient-to-br from-clay-accent-alt/15 to-pink-500/15 blur-3xl pointer-events-none dark:from-clay-accent-alt/20 dark:to-pink-500/20" />
+        <Card className="neo-card relative overflow-hidden rounded-neoLg bg-neo-card dark:bg-neo-cardDark border border-neo-border dark:border-neo-borderDark h-full flex flex-col transition-all duration-200 hover:border-neo-borderStrong dark:hover:border-neo-borderStrongDark">
+          {/* Accent bar - right side for output */}
+          <div className="absolute right-0 top-0 bottom-0 w-0.5 bg-neo-foreground/20 dark:bg-white/20" />
 
-          <CardHeader className="relative z-10 pb-2">
+          <CardHeader className="relative z-10 pb-2 px-4 pt-4">
             <div className="flex items-center justify-between">
               <CardTitle
                 className="flex items-center gap-2 cursor-pointer group select-none"
@@ -85,10 +91,8 @@ export const OutputSection = memo(({
                 tabIndex={0}
                 title="Click to view kernel features"
               >
-                <span
-                  className="text-2xl font-black text-[#1a1a1a] dark:text-[#e0e0e0]"
-                  style={{ fontFamily: 'Nunito, sans-serif' }}
-                >
+                {/* Technical label */}
+                <span className="text-xl md:text-2xl font-semibold text-neo-foreground dark:text-white tracking-tight">
                   {labels.outputLabel}
                 </span>
               </CardTitle>
@@ -102,9 +106,10 @@ export const OutputSection = memo(({
               </div>
             </div>
           </CardHeader>
-          <CardContent className="relative z-10 flex-1 flex flex-col px-6 pb-6">
-            {/* Editor Area with inset shadow */}
-            <div className="flex-1 clay-pressed dark:clay-pressed-dark rounded-2xl p-4 bg-[#F8F7FF] dark:bg-[#242636] border border-white/40 dark:border-white/10">
+
+          <CardContent className="relative z-10 flex-1 flex flex-col px-4 pb-4">
+            {/* Editor Area - recessed, functional */}
+            <div className="flex-1 neo-input rounded-neoMd bg-neo-canvas dark:bg-neo-canvasDark border border-neo-border dark:border-neo-borderDark overflow-hidden">
               <PreviewEditor
                 key={outputFormat}
                 value={output}
@@ -113,47 +118,55 @@ export const OutputSection = memo(({
                 placeholder={outputPlaceholder}
               />
             </div>
-            {/* Tip Section */}
-            <div className="mt-4 flex items-center gap-2 text-xs text-clay-muted dark:text-[#808080]">
-              <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-              <span style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                Tip · Shadow-clayPressed
-              </span>
+
+            {/* Status Bar - technical, informative */}
+            <div className="mt-3 flex items-center justify-between text-xs h-5">
+              <div className="flex items-center gap-1.5 text-neo-muted dark:text-neo-mutedLight">
+                <Cpu className="w-3.5 h-3.5" />
+                <span className="mono">{kernelTitle}</span>
+              </div>
+              <div className="mono text-neo-muted dark:text-neo-mutedLight">
+                {itemCount} NODES
+              </div>
             </div>
-            {/* Action Buttons */}
-            <div className="mt-4 flex gap-3">
-              {/* Download Button - Gradient Purple to Pink */}
+
+            {/* Action Buttons - Sharp, functional */}
+            <div className="mt-3 flex gap-2 h-10">
+              {/* Download Button - Primary action */}
               <Button
                 onClick={onDownload}
                 disabled={itemCount === 0}
-                className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white font-bold clay-button dark:clay-button transition-all duration-300 hover:-translate-y-1 hover:clay-button-hover dark:hover:clay-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 h-full rounded-neoMd bg-neo-foreground dark:bg-white text-neo-canvas dark:text-neo-canvasDark font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed border-0 hover:opacity-90"
                 title={labels.download}
               >
-                <Download className="w-5 h-5 mr-2 shrink-0" />
+                <Download className="w-4 h-4 mr-2 shrink-0" />
                 {labels.download}
               </Button>
-              {/* Copy Button - White */}
+
+              {/* Copy Button - Secondary action */}
               <Button
                 variant="outline"
-                onClick={onCopy}
+                onClick={handleCopy}
                 disabled={itemCount === 0}
-                className="h-12 px-6 rounded-full bg-white dark:bg-[#242636] text-clay-foreground dark:text-[#e0e0e0] font-semibold border-white/20 dark:border-white/10 clay-button dark:clay-button transition-all duration-300 hover:-translate-y-1 hover:clay-button-hover dark:hover:clay-button-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-full px-4 rounded-neoMd bg-transparent hover:bg-neo-border dark:hover:bg-neo-borderDark text-neo-foreground dark:text-white font-medium border border-neo-border dark:border-neo-borderDark transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                 title={labels.copy}
               >
-                <Download className="w-5 h-5" />
+                {copied ? (
+                  <Check className="w-4 h-4 text-neo-success" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </CardContent>
         </Card>
-        <DialogContent className="max-w-md rounded-[32px] border-white/20 bg-white/90 dark:bg-[#1a1b26]/95 backdrop-blur-xl clay-card dark:clay-card-dark">
+
+        <DialogContent className="max-w-md rounded-neoLg border border-neo-border dark:border-neo-borderDark bg-neo-card dark:bg-neo-cardDark">
           <DialogHeader>
-            <DialogTitle
-              className="text-2xl font-black text-[#1a1a1a] dark:text-[#e0e0e0]"
-              style={{ fontFamily: 'Nunito, sans-serif' }}
-            >
+            <DialogTitle className="text-xl font-semibold text-neo-foreground dark:text-white tracking-tight">
               Kernel Features
             </DialogTitle>
-            <DialogDescription className="text-clay-muted dark:text-[#808080]">
+            <DialogDescription className="text-neo-muted dark:text-neo-mutedLight">
               Supported features for this kernel
             </DialogDescription>
           </DialogHeader>
