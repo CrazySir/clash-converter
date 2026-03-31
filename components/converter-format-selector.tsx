@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Cpu, Info } from 'lucide-react';
 import { FormatType } from '@/lib/parser';
 
 interface FormatSelectorProps {
@@ -12,19 +11,19 @@ interface FormatSelectorProps {
 
 export function FormatSelector({ value, onChange, options, infoButton }: FormatSelectorProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <Select value={value} onValueChange={(val) => onChange(val as FormatType)} aria-label="Select format">
-        <SelectTrigger className="w-full min-w-[140px] max-w-[180px] h-10 rounded-2xl bg-white/80 border-white/20 text-sm font-semibold text-clay-foreground clay-pressed focus:ring-2 focus:ring-clay-accent/30 focus:bg-white transition-all duration-300">
+        <SelectTrigger className="w-auto min-w-[130px] max-w-[160px] h-8 rounded-neoMd bg-neo-canvas dark:bg-neo-canvasDark border border-neo-border dark:border-neo-borderDark text-sm font-medium text-neo-foreground dark:text-white transition-all duration-200 hover:border-neo-borderStrong dark:hover:border-neo-borderStrongDark focus:ring-2 focus:ring-neo-borderStrong dark:focus:ring-neo-borderStrongDark">
           <SelectValue className="truncate" />
         </SelectTrigger>
-        <SelectContent className="rounded-2xl border-white/20 bg-white/95 backdrop-blur-xl clay-card">
+        <SelectContent className="rounded-neoMd border border-neo-border dark:border-neo-borderDark bg-neo-card dark:bg-neo-cardDark">
           {options.map((option) => (
             <SelectItem
               key={option.value}
               value={option.value}
-              className="rounded-xl mb-1 font-medium text-clay-foreground hover:bg-clay-accent/10 hover:text-clay-accent transition-colors duration-200 last:mb-0"
+              className="rounded-neo mb-0.5 font-medium text-neo-foreground dark:text-white hover:bg-neo-border dark:hover:bg-neo-borderDark transition-colors duration-150 last:mb-0"
             >
-              <span className="truncate block max-w-[200px]">{option.label}</span>
+              <span className="truncate block max-w-[180px]">{option.label}</span>
             </SelectItem>
           ))}
         </SelectContent>
