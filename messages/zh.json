@@ -6,7 +6,6 @@
   "footer": {
     "rights": "版权所有",
     "contact": "联系",
-    "description": "专业的代理配置转换器。立即将各种代理协议转换为 Clash YAML 和 Sing-Box JSON 格式。",
     "connect": "联系我们"
   },
   "resources": {

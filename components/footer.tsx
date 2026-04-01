@@ -30,13 +30,6 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Center: Description (hidden on small mobile) */}
-          <div className="hidden md:block flex-1 max-w-md">
-            <p className="text-xs text-neo-muted/80 dark:text-neo-muted-light/80 text-center leading-relaxed">
-              {t('description')}
-            </p>
-          </div>
-
           {/* Right: Action Buttons */}
           <div className="flex items-center gap-2">
             {/* Email Button */}
@@ -66,25 +59,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar - Structural divider with status */}
-        <div className="mt-8 pt-6 border-t border-neo-border dark:border-neo-border-dark">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            {/* Status Indicator */}
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-neo-success animate-pulse" />
-              <span className="neo-label text-[10px] text-neo-muted/70 dark:text-neo-muted-light/70 tracking-wider">
-                SYSTEM OPERATIONAL
-              </span>
-            </div>
 
-            {/* Tech Stack */}
-            <div className="flex items-center gap-4">
-              <span className="text-xs text-neo-muted/70 dark:text-neo-muted-light/70 font-medium">
-                Built with Next.js 16
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
     </footer>
   );
