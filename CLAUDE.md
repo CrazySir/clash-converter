@@ -20,6 +20,11 @@ pnpm start    # Start production server
 pnpm run lint # Run ESLint
 npx tsc --noEmit # TypeScript type check
 
+# Testing
+pnpm test     # Run all tests
+pnpm test:ui  # Run tests with UI
+pnpm test:coverage  # Run tests with coverage
+
 # Cloudflare deployment
 pnpm build:cf # Build for Cloudflare Workers
 pnpm deploy:cf # Deploy to Cloudflare
@@ -28,7 +33,7 @@ pnpm preview   # Preview Cloudflare build locally
 
 ## Technology Stack
 
-- **Framework**: Next.js 16.1.1 with App Router
+- **Framework**: Next.js 16.1.5 with App Router
 - **Language**: TypeScript 5.6+ (strict mode)
 - **Styling**: Tailwind CSS v3 with shadcn/ui components
 - **Icons**: Lucide React
@@ -347,51 +352,82 @@ Primary domain: clashconverter.com
 
 ## Design System
 
-**High-Fidelity Claymorphism Design System** - See `DESIGN.md` for complete specifications.
+**Neo-Technical Minimalism** - Refined Precision design system defined in `app/globals.css`.
 
-### Key Design Tokens
+### Design Tokens
 
 **Colors:**
-- Canvas: `#F4F1FA` (light mode), `#0d0e15` (dark mode footer/page background)
-- Cards: `bg-white/70` (light), `dark:bg-[#1a1b26]/80` (dark)
-- Buttons: `bg-white` (light), `dark:bg-[#24283b]` (dark)
-- Accent: `#7C3AED` (Vivid Violet), `#DB2777` (Hot Pink), `#0EA5E9` (Sky Blue)
+- Canvas: `#F5F3EE` (light mode), `#0A0A0C` (dark mode)
+- Foreground: `#1A1A1C` (primary text), `#6B6B6F` (muted), `#9A9A9E` (muted-light)
+- Card: `#FAF8F5` (light), `#121214` (dark)
+- Border: `rgba(0,0,0,0.08)` (light), `rgba(255,255,255,0.06)` (dark)
+- Accent: `#00D9FF` (electric cyan), `#00B8D9` (hover)
+- Success: `#00C853`, Warning: `#FFB300`, Error: `#FF5252`
 
 **Typography:**
-- Headings: Nunito (700/800/900 weight)
-- Body: DM Sans (400/500/700 weight)
+- Body: Inter (300/400/500/600 weight)
+- Headings: Space Grotesk (400/500/600/700 weight)
+- Technical labels: JetBrains Mono (400/500/600 weight)
 
-**Border Radii:**
-- Large containers: `rounded-[48px]` to `rounded-[60px]`
-- Standard cards: `rounded-[32px]`
-- Buttons/Inputs: `rounded-[20px]` or `rounded-full`
+**CSS Variables:**
+```css
+/* Light mode */
+--neo-canvas: #F5F3EE;
+--neo-foreground: #1A1A1C;
+--neo-muted: #6B6B6F;
+--neo-muted-light: #9A9A9E;
+--neo-accent: #00D9FF;
+--neo-card: #FAF8F5;
+--neo-border: rgba(0,0,0,0.08);
 
-**Shadow Utilities (defined in `app/globals.css`):**
-- `.clay-surface` / `.dark .clay-surface` - Deep surface shadows
-- `.clay-card` / `.dark:clay-card-dark` - Floating card shadows
-- `.clay-card-hover` / `.dark:clay-card-hover-dark` - Hover state enhancement
-- `.clay-button` / `.dark:clay-button` - Button convexity shadows
-- `.clay-button-hover` / `.dark:clay-button-hover` - Button hover state
-- `.clay-pressed` / `.dark:clay-pressed-dark` - Recessed input shadows
+/* Dark mode */
+.dark {
+  --neo-canvas-dark: #0A0A0C;
+  --neo-card-dark: #121214;
+  --neo-border-dark: rgba(255,255,255,0.06);
+}
+```
+
+### Utility Classes
+
+**Layout:**
+- `.neo-grid-lines` - Structural grid background pattern
+- `.neo-surface` - Subtle elevated surface shadow
+- `.neo-card` - Card with clean edge shadow
+- `.neo-card-hover` - Hover state with lift animation
+
+**Typography:**
+- `.neo-label` - JetBrains Mono uppercase labels (0.75rem, tracking-wide)
+- `.neo-heading-xl`, `.neo-heading-lg`, `.neo-heading-md` - Space Grotesk headings
+
+**Animation:**
+- `.neo-enter` - Entrance animation (fade + slide up)
+- `.neo-delay-1` to `.neo-delay-5` - Stagger delays (0.05s increments)
+
+**Interactive:**
+- `.neo-button` - Functional button shadow
+- `.neo-input` - Recessed input shadow
+- `.neo-focus` - Focus state with accent ring
 
 ### Component Patterns
 
-**Standard Card Structure:**
+**Header:**
 ```tsx
-<div className="clay-card dark:clay-card-dark relative overflow-hidden rounded-[32px] bg-white/70 dark:bg-[#1a1b26]/80 backdrop-blur-xl border-white/30 dark:border-white/10 transition-all duration-500">
-  {/* Decorative gradient orbs */}
-  <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br from-clay-accent/20 to-clay-accent-alt/20 blur-3xl pointer-events-none dark:from-clay-accent/25 dark:to-clay-accent-alt/25" />
-  {/* Content */}
-</div>
+<header className="sticky top-0 z-50 w-full border-b border-neo-border dark:border-neo-borderDark bg-neo-card/95 dark:bg-neo-cardDark/95 backdrop-blur-sm">
 ```
 
-**Standard Button Structure:**
+**Navigation Button:**
 ```tsx
-<button className="clay-button dark:clay-button px-6 py-3 rounded-full bg-white dark:bg-[#24283b] text-clay-foreground dark:text-[#e0e0e0] font-semibold transition-all duration-300 hover:-translate-y-1 hover:clay-button-hover">
+<button className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-neo-muted dark:text-neo-mutedLight hover:text-neo-foreground dark:hover:text-white transition-colors duration-200 border border-transparent hover:border-neo-border dark:hover:border-neo-borderDark rounded-md">
 ```
 
-**Dark Mode Strategy:**
-- All components must support dark mode using `dark:` variants
-- Dark backgrounds use `#0d0e15` (page), `#1a1b26` (cards), `#24283b` (buttons)
-- Text colors: `text-clay-muted` (light), `dark:text-[#808080]` (dark)
-- Decorative elements increase opacity in dark mode (`/20` → `/25`)
+**Footer:**
+```tsx
+<footer className="w-full py-8 md:py-12 bg-neo-card/50 dark:bg-neo-card-dark/50 backdrop-blur-sm border-t border-neo-border dark:border-neo-border-dark">
+```
+
+### Dark Mode Strategy
+- All components use `dark:*` variants
+- Consistent color mapping between light/dark themes
+- Border opacity adjusted for contrast
+- Text colors maintain readability

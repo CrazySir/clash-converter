@@ -3,7 +3,7 @@
 A client-side proxy configuration converter that transforms various proxy protocols into Clash YAML or Sing-Box JSON formats.
 
 [![Clash Converter](https://img.shields.io/badge/Clash-Converter-blue)](https://clashconverter.com)
-[![Next.js](https://img.shields.io/badge/Next.js-16.1.1-black)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.5-black)](https://nextjs.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## Features
@@ -13,7 +13,7 @@ A client-side proxy configuration converter that transforms various proxy protoc
 - **Multiple Output Formats**: Clash Meta, Clash Premium, Sing-Box, Loon
 - **Bidirectional Conversion**: Proxy links ↔ Clash YAML ↔ Sing-Box JSON
 - **Multi-Language**: English & 简体中文
-- **Dark/Light Theme**: System preference detection
+- **Dark/Light Theme**: System preference detection with Neo-Technical Minimalism design
 
 ## Quick Start
 
@@ -58,12 +58,17 @@ NEXT_PUBLIC_ENABLE_LOON_TRANSFER=true
 clashconverter/
 ├── app/              # Next.js App Router
 ├── components/       # React components
+│   ├── ui/          # shadcn/ui components
+│   ├── dialogs/     # Dialog components
+│   ├── seo/         # SEO components
+│   └── ...
 ├── lib/              # Core utilities
 │   ├── core/         # Factory & Registry patterns
 │   ├── adapters/     # Protocol adapters
 │   ├── generators/   # Output generators
 │   ├── parsers/      # Input parsers
-│   └── types/        # Type definitions
+│   ├── types/        # Type definitions
+│   └── errors/       # Custom error classes
 ├── messages/         # i18n translations
 └── public/           # Static assets
 ```
@@ -75,10 +80,71 @@ clashconverter/
 - **Type Safety**: Discriminated union types + Zod runtime validation
 - **Error Handling**: Custom error classes with structured codes
 
+## Technology Stack
+
+| Category | Technology |
+|----------|------------|
+| Framework | Next.js 16.1.5 (App Router) |
+| Language | TypeScript 5.6+ |
+| Styling | Tailwind CSS v3 |
+| UI Components | shadcn/ui |
+| Icons | Lucide React |
+| Code Editor | CodeMirror 6 |
+| i18n | next-intl v4 |
+| Theme | next-themes |
+| Notifications | Sonner |
+| Validation | Zod v4 |
+| YAML | yaml library |
+| Deployment | Cloudflare Workers |
+
+## Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run with UI
+pnpm test:ui
+
+# Run with coverage
+pnpm test:coverage
+```
+
+## Design System
+
+**Neo-Technical Minimalism** - A refined, technical aesthetic with:
+
+- **Colors**: Warm neutral canvas (`#F5F3EE` / `#0A0A0C` dark)
+- **Accent**: Electric cyan (`#00D9FF`)
+- **Typography**: Inter (body), Space Grotesk (headings), JetBrains Mono (labels)
+- **Features**: Structural grid backgrounds, subtle shadows, smooth animations
+
+## Supported Protocols
+
+| Protocol | Format | Input | Output |
+|----------|--------|-------|--------|
+| Shadowsocks | `ss://` | ✓ | ✓ |
+| ShadowsocksR | `ssr://` | ✓ | ✓ |
+| VMess | `vmess://` | ✓ | ✓ |
+| VLESS | `vless://` | ✓ | ✓ |
+| Trojan | `trojan://` | ✓ | ✓ |
+| Hysteria | `hysteria://` | ✓ | ✓ |
+| Hysteria2 | `hysteria2://` | ✓ | ✓ |
+| HTTP | `http://` | ✓ | ✓ |
+| SOCKS5 | `socks5://` | ✓ | ✓ |
+
+## Output Format Compatibility
+
+| Format | SS | SSR | VMess | VLESS | Trojan | Hysteria | Hysteria2 | HTTP | SOCKS5 |
+|--------|----|-----|-------|-------|--------|----------|-----------|------|--------|
+| Clash Meta | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Clash Premium | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ | ✓ | ✓ |
+| Sing-Box | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| Loon | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ |
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
-
 
 ## Support
 
