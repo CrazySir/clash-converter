@@ -110,7 +110,7 @@ export function generateInbounds(): any[] {
         '172.19.0.1/30',
         '2001:0470:f9da:fdfa::1/64',
       ],
-      mtu: 9000,
+      mtu: 1500,
       sniff_override_destination: true,
       stack: 'system',
       strict_route: true,

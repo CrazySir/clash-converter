@@ -63,6 +63,11 @@ export class VLESSAdapter implements IProtocolAdapter {
       };
     }
 
+    obj.tls.utls = {
+      enabled: true,
+      fingerprint: 'chrome'
+    };
+
     if (vlessNode['skip-cert-verify']) {
       if (!obj.tls) obj.tls = { enabled: true };
       obj.tls.insecure = vlessNode['skip-cert-verify'];

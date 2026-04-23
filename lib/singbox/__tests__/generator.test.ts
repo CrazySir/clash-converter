@@ -133,7 +133,7 @@ describe('generateInbounds', () => {
     expect(tun.stack).toBe('system');
     expect(tun.strict_route).toBe(true);
     expect(tun.auto_route).toBe(true);
-    expect(tun.mtu).toBe(9000);
+    expect(tun.mtu).toBe(1500);
   });
 
   it('SOCKS inbound has correct configuration', () => {
